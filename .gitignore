@@ -19,3 +19,13 @@ dist/
 
 # Local Claude settings, if created
 .claude/settings.local.json
+
+# from 10x-astro-starter
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env.production
+.dev.vars
+.DS_Store
+.idea/
