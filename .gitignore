@@ -1,0 +1,21 @@
+# Local backups / temporary course imports
+BACKUPS/
+10xdevs3-artifacts-m1/
+*_backup*/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Node / build output
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# Logs
+*.log
+
+# Local Claude settings, if created
+.claude/settings.local.json
