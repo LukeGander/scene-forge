@@ -1,14 +1,15 @@
 ---
 project: scene-forge
 platform: Cloudflare Workers
-status: planned-not-executed
+status: in-progress
 planned_at: 2026-07-08
+updated_at: 2026-07-14
 source: context/foundation/infrastructure.md
 ---
 
 ## Status
 
-**Planning only — nothing in this document has been executed yet.** No deploy has run, no secrets have been set, no Cloudflare account/token has been created, and no repo files (`wrangler.jsonc`, `package.json`, `.github/workflows/ci.yml`) have been modified. This file exists so the plan can be resumed in a future session without re-deriving it.
+**In progress — manual account/tooling setup and Phase 0 repo changes are done; no deploy has run yet.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. A Supabase project (`SceneForge`) exists for local dev and first production deployment, but its `SUPABASE_URL`/`SUPABASE_KEY` values are not yet wired into Wrangler/GitHub secrets. `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). No `wrangler deploy` has run, and `.github/workflows/ci.yml` has no deploy job yet. This file exists so the plan can be resumed in a future session without re-deriving it.
 
 ## Context
 
@@ -24,29 +25,33 @@ This is a **course-certification MVP** with a hard cost constraint set explicitl
 - **CI deploy mechanism**: `cloudflare/wrangler-action@v3` (official action) in a `deploy` job appended to the existing `.github/workflows/ci.yml`, gated with `needs: ci` so deploy only ever follows a green lint+build on the same commit.
 - **Anthropic / Forge Scene**: out of scope for this deploy. `ANTHROPIC_API_KEY` is **not** provisioned now — an unused secret is pure blast-radius with no benefit, and Forge Scene doesn't exist in code yet. Current `compatibility_date` (2026-05-08) and `nodejs_compat` flag already satisfy `@anthropic-ai/sdk`'s Workers requirements (verified against official docs, 2026-07-08) — no adapter changes will be needed when Forge Scene is built. Whoever implements FR-016 should give Forge Scene a working no-key/mock generation path so production never *requires* a paid Anthropic key.
 
-## Pending manual steps (human-only, none done yet)
+## Pending manual steps
 
-- [ ] Create a Cloudflare account if one doesn't exist yet (Free plan — no billing upgrade).
-- [ ] `wrangler login` locally (interactive OAuth) for whoever runs the first manual deploy.
-- [ ] Create a scoped Cloudflare API token (dashboard → My Profile → API Tokens → Create Token): `Workers Scripts:Edit` for this account only — no DNS, no billing, no account-wide admin.
-- [ ] Add `CLOUDFLARE_API_TOKEN` as a GitHub Actions repo secret. Add `CLOUDFLARE_ACCOUNT_ID` too (either as a GitHub secret, or as a non-secret `account_id` field directly in `wrangler.jsonc` once known).
-- [ ] Confirm which Supabase project's `SUPABASE_URL`/`SUPABASE_KEY` values should back production, and that they match the GitHub secrets `ci.yml` already reads for its build step.
+- [x] Create a Cloudflare account (Free plan — no billing upgrade).
+- [x] `wrangler login` locally (interactive OAuth) — completed.
+- [x] Create a scoped Cloudflare API token (dashboard → My Profile → API Tokens → Create Token): `Workers Scripts:Edit` for this account only — no DNS, no billing, no account-wide admin. Verified valid and active.
+- [x] Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as GitHub Actions repo secrets. Verified present via `gh secret list --repo LukeGander/scene-forge` (names only, no values):
+  - `CLOUDFLARE_API_TOKEN` — set 2026-07-14T19:44:26Z
+  - `CLOUDFLARE_ACCOUNT_ID` — set 2026-07-14T19:47:51Z
+- [x] Create Supabase project `SceneForge` for local dev and first production deployment.
+- [x] GitHub remote `origin` added (`https://github.com/LukeGander/scene-forge.git`).
+- [x] GitHub CLI installed and authenticated as `LukeGander` (`gh auth status` confirms `github.com` account `LukeGander`, https protocol).
+- [ ] Locate the production `SUPABASE_URL` and public `SUPABASE_KEY` in the Supabase dashboard, wire them into Wrangler/GitHub secrets, and confirm they match the GitHub secrets `ci.yml` already reads for its build step.
 
 ## Commands that must NOT be run yet
 
-These require the manual steps above to be completed first, and/or explicit go-ahead in a future session:
+These require the remaining manual step above to be completed first, and/or explicit go-ahead in a future session:
 
-- `wrangler login`
 - `wrangler deploy`
 - `wrangler secret put SUPABASE_URL` / `wrangler secret put SUPABASE_KEY`
-- Any GitHub secret creation (`gh secret set ...` or via GitHub UI)
+- Any further GitHub secret creation for Supabase values (`gh secret set ...` or via GitHub UI)
 
 ## Repo file changes planned (not executed)
 
 | File | Planned change | Status |
 |---|---|---|
-| `wrangler.jsonc` | `"name": "10x-astro-starter"` → `"name": "scene-forge"` | Not done |
-| `package.json` | `"name"` → `"scene-forge"`; add `"deploy": "astro build && wrangler deploy"` script | Not done |
+| `wrangler.jsonc` | `"name": "10x-astro-starter"` → `"name": "scene-forge"` | Done (commit `aa43a71`) |
+| `package.json` | `"name"` → `"scene-forge"`; add `"deploy": "astro build && wrangler deploy"` script | Done (commit `aa43a71`) |
 | `.github/workflows/ci.yml` | Add a `deploy` job (`needs: ci`, `if: push to main`) using `cloudflare/wrangler-action@v3` with `apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}` | Not done |
 | `context/deployment/secrets-bindings-log.md` | New file — one row per future secret/binding change, to compensate for `wrangler rollback` not reverting secrets/bindings | Not created |
 
@@ -55,11 +60,14 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 ## Full phased plan (for execution once resumed)
 
 ### Phase 0 — Repo config corrections
-- [ ] Rename Worker in `wrangler.jsonc` and `package.json`.
-- [ ] Add `deploy` script to `package.json`.
+- [x] Rename Worker in `wrangler.jsonc` and `package.json`.
+- [x] Add `deploy` script to `package.json`.
+- [x] Committed as `aa43a71` — "Prepare Cloudflare Worker deployment config" (2026-07-14).
 
 ### Phase 1 — Manual Cloudflare & GitHub setup (free tier)
-- [ ] Account, `wrangler login`, scoped API token, GitHub secrets, Supabase env verification — see checklist above.
+- [x] Cloudflare account, `wrangler login`, scoped API token, Cloudflare GitHub secrets — done, see checklist above.
+- [x] Supabase project `SceneForge` created.
+- [ ] Supabase env verification (`SUPABASE_URL`/`SUPABASE_KEY` values wired and matched against `ci.yml`) — still pending, see checklist above.
 
 ### Phase 2 — First manual deploy
 - [ ] `wrangler secret put SUPABASE_URL` / `SUPABASE_KEY` (exact names — not `infrastructure.md`'s illustrative `SUPABASE_SERVICE_KEY`).
@@ -91,9 +99,9 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 - [ ] Do not add `ANTHROPIC_API_KEY` or touch the env schema until Forge Scene is actually implemented.
 - [ ] Forge Scene must ship with a no-key/mock generation path so production deploys never require a paid Anthropic key.
 
-## Next recommended step for tomorrow
+## Next step tomorrow
 
-Start at **Phase 1** (manual Cloudflare account creation + `wrangler login` + scoped API token + GitHub secrets). Nothing in Phase 0 is blocking — the `wrangler.jsonc`/`package.json` renames can be done independently in the same session as Phase 1, right before the first manual deploy in Phase 2.
+Resume by locating the production `SUPABASE_URL` and public `SUPABASE_KEY` in the Supabase dashboard, then add them through Wrangler/GitHub secrets without exposing values in chat.
 
 ## Verification (once executed)
 
