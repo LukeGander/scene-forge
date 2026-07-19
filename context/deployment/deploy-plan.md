@@ -3,13 +3,13 @@ project: scene-forge
 platform: Cloudflare Workers
 status: in-progress
 planned_at: 2026-07-08
-updated_at: 2026-07-14
+updated_at: 2026-07-19
 source: context/foundation/infrastructure.md
 ---
 
 ## Status
 
-**In progress — manual account/tooling setup and Phase 0 repo changes are done; no deploy has run yet.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. A Supabase project (`SceneForge`) exists for local dev and first production deployment, but its `SUPABASE_URL`/`SUPABASE_KEY` values are not yet wired into Wrangler/GitHub secrets. `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). No `wrangler deploy` has run, and `.github/workflows/ci.yml` has no deploy job yet. This file exists so the plan can be resumed in a future session without re-deriving it.
+**In progress — first manual deploy succeeded; Phase 3 smoke test and CI/CD wiring are pending.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. `SUPABASE_URL`/`SUPABASE_KEY` are wired into both Wrangler secrets and GitHub Actions secrets (names verified, values never displayed). `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). `npm run build` succeeded locally, and `npx wrangler deploy` succeeded after registering the `lukegander` workers.dev subdomain — production URL is `https://scene-forge.lukegander.workers.dev`, currently serving the unmodified scaffold UI (auth flow not yet smoke-tested against production). `.github/workflows/ci.yml` still has no deploy job, and nothing has been pushed to GitHub since this deploy. This file exists so the plan can be resumed in a future session without re-deriving it.
 
 ## Context
 
@@ -36,15 +36,16 @@ This is a **course-certification MVP** with a hard cost constraint set explicitl
 - [x] Create Supabase project `SceneForge` for local dev and first production deployment.
 - [x] GitHub remote `origin` added (`https://github.com/LukeGander/scene-forge.git`).
 - [x] GitHub CLI installed and authenticated as `LukeGander` (`gh auth status` confirms `github.com` account `LukeGander`, https protocol).
-- [ ] Locate the production `SUPABASE_URL` and public `SUPABASE_KEY` in the Supabase dashboard, wire them into Wrangler/GitHub secrets, and confirm they match the GitHub secrets `ci.yml` already reads for its build step.
+- [x] Locate the production `SUPABASE_URL` and public `SUPABASE_KEY` in the Supabase dashboard, wire them into Wrangler/GitHub secrets, and confirm they match the GitHub secrets `ci.yml` already reads for its build step. Verified via `wrangler secret list` / `gh secret list` (names only).
+- [x] Register a `workers.dev` account subdomain — done as `lukegander`.
 
 ## Commands that must NOT be run yet
 
-These require the remaining manual step above to be completed first, and/or explicit go-ahead in a future session:
+These require explicit go-ahead in a future session:
 
-- `wrangler deploy`
-- `wrangler secret put SUPABASE_URL` / `wrangler secret put SUPABASE_KEY`
-- Any further GitHub secret creation for Supabase values (`gh secret set ...` or via GitHub UI)
+- Any further `wrangler deploy` (re-deploys, e.g. after a code/config change) until Phase 3 smoke test is approved and run.
+- Any CI/CD deploy job changes to `.github/workflows/ci.yml`.
+- `git push` — nothing has been pushed to GitHub since this deploy.
 
 ## Repo file changes planned (not executed)
 
@@ -67,15 +68,16 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 ### Phase 1 — Manual Cloudflare & GitHub setup (free tier)
 - [x] Cloudflare account, `wrangler login`, scoped API token, Cloudflare GitHub secrets — done, see checklist above.
 - [x] Supabase project `SceneForge` created.
-- [ ] Supabase env verification (`SUPABASE_URL`/`SUPABASE_KEY` values wired and matched against `ci.yml`) — still pending, see checklist above.
+- [x] Supabase env verification (`SUPABASE_URL`/`SUPABASE_KEY` values wired and matched against `ci.yml`) — done, see checklist above.
 
 ### Phase 2 — First manual deploy
-- [ ] `wrangler secret put SUPABASE_URL` / `SUPABASE_KEY` (exact names — not `infrastructure.md`'s illustrative `SUPABASE_SERVICE_KEY`).
-- [ ] `npm run build`
-- [ ] `wrangler deploy`
-- [ ] Record the returned `*.workers.dev` URL here.
+- [x] `wrangler secret put SUPABASE_URL` / `SUPABASE_KEY` (exact names — not `infrastructure.md`'s illustrative `SUPABASE_SERVICE_KEY`).
+- [x] `npm run build` — succeeded locally.
+- [x] `wrangler deploy` — succeeded; auto-provisioned the `SESSION` KV namespace (`scene-forge-session`) as a binding side effect.
+- [x] Registered `workers.dev` subdomain `lukegander` (required one-time account step before first publish).
+- [x] Production URL: **https://scene-forge.lukegander.workers.dev** — loads successfully, currently showing the unmodified scaffold ("10x Astro Starter") UI.
 
-### Phase 3 — Smoke test (manual deploy)
+### Phase 3 — Smoke test (manual deploy) — PENDING, next session
 - [ ] With `wrangler tail --format pretty` running: sign up → confirm-email redirect → sign in → `/dashboard` loads → sign out → re-visiting `/dashboard` redirects to sign-in.
 - [ ] Confirm no `Dynamic require of "..." is not supported` / Node-built-in `ReferenceError`s in the tail output (the known `@supabase/ssr`-on-Workers failure mode without `nodejs_compat`; the flag is already set, this proves it end-to-end against real `workerd`).
 - [ ] Watch for a CPU-limit-exceeded error (Free tier's 10ms ceiling — the accepted risk). If hit, see Edge Cases fallback below.
@@ -101,10 +103,20 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 
 ## Next step tomorrow
 
-Resume by locating the production `SUPABASE_URL` and public `SUPABASE_KEY` in the Supabase dashboard, then add them through Wrangler/GitHub secrets without exposing values in chat.
+Resume with the **Phase 3 browser smoke test** against `https://scene-forge.lukegander.workers.dev`, one check at a time, approving each before moving to the next:
+
+1. Sign up.
+2. Email confirmation (if required by the flow).
+3. Sign in.
+4. Protected `/dashboard` loads.
+5. Sign out.
+6. Unauthenticated visit to `/dashboard` redirects to sign-in.
+
+Only after Phase 3 passes: wire the CI/CD deploy job into `.github/workflows/ci.yml` (Phase 4), run the automated-deploy smoke test (Phase 5), and push to GitHub.
 
 ## Verification (once executed)
 
-- `npm run build` succeeds locally before any deploy.
-- Phase 3 and Phase 5 browser-driven smoke tests (sign up/in/out, protected route) pass against the real deployed Worker with clean `wrangler tail` output.
-- GitHub Actions `ci` and `deploy` jobs both green after merging to `main`.
+- [x] `npm run build` succeeds locally before any deploy.
+- [x] First manual `wrangler deploy` succeeds and serves a reachable production URL.
+- [ ] Phase 3 and Phase 5 browser-driven smoke tests (sign up/in/out, protected route) pass against the real deployed Worker with clean `wrangler tail` output.
+- [ ] GitHub Actions `ci` and `deploy` jobs both green after merging to `main`.
