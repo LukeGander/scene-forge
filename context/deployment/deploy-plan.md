@@ -3,13 +3,13 @@ project: scene-forge
 platform: Cloudflare Workers
 status: in-progress
 planned_at: 2026-07-08
-updated_at: 2026-07-19
+updated_at: 2026-07-20
 source: context/foundation/infrastructure.md
 ---
 
 ## Status
 
-**In progress — first manual deploy succeeded; Phase 3 smoke test and CI/CD wiring are pending.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. `SUPABASE_URL`/`SUPABASE_KEY` are wired into both Wrangler secrets and GitHub Actions secrets (names verified, values never displayed). `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). `npm run build` succeeded locally, and `npx wrangler deploy` succeeded after registering the `lukegander` workers.dev subdomain — production URL is `https://scene-forge.lukegander.workers.dev`, currently serving the unmodified scaffold UI (auth flow not yet smoke-tested against production). `.github/workflows/ci.yml` still has no deploy job, and nothing has been pushed to GitHub since this deploy. This file exists so the plan can be resumed in a future session without re-deriving it.
+**In progress — first manual deploy succeeded; Phase 3 smoke test passed; CI/CD wiring (Phase 4) is next.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. `SUPABASE_URL`/`SUPABASE_KEY` are wired into both Wrangler secrets and GitHub Actions secrets (names verified, values never displayed). `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). `npm run build` succeeded locally, and `npx wrangler deploy` succeeded after registering the `lukegander` workers.dev subdomain — production URL is `https://scene-forge.lukegander.workers.dev`. The full auth flow (sign up, email confirmation, sign in, protected `/dashboard`, sign out, unauthenticated redirect) has been smoke-tested against production with `wrangler tail` running and passed cleanly — no worker errors, no CPU-limit issues. `.github/workflows/ci.yml` still has no deploy job, and nothing has been pushed to GitHub since this deploy. This file exists so the plan can be resumed in a future session without re-deriving it.
 
 ## Context
 
@@ -77,10 +77,10 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 - [x] Registered `workers.dev` subdomain `lukegander` (required one-time account step before first publish).
 - [x] Production URL: **https://scene-forge.lukegander.workers.dev** — loads successfully, currently showing the unmodified scaffold ("10x Astro Starter") UI.
 
-### Phase 3 — Smoke test (manual deploy) — PENDING, next session
-- [ ] With `wrangler tail --format pretty` running: sign up → confirm-email redirect → sign in → `/dashboard` loads → sign out → re-visiting `/dashboard` redirects to sign-in.
-- [ ] Confirm no `Dynamic require of "..." is not supported` / Node-built-in `ReferenceError`s in the tail output (the known `@supabase/ssr`-on-Workers failure mode without `nodejs_compat`; the flag is already set, this proves it end-to-end against real `workerd`).
-- [ ] Watch for a CPU-limit-exceeded error (Free tier's 10ms ceiling — the accepted risk). If hit, see Edge Cases fallback below.
+### Phase 3 — Smoke test (manual deploy) — COMPLETED 2026-07-20
+- [x] With `wrangler tail --format pretty` running: sign up → confirm-email redirect → sign in → `/dashboard` loads → sign out → re-visiting `/dashboard` redirects to sign-in. All steps passed against `https://scene-forge.lukegander.workers.dev`. Tail log confirmed: `POST /api/auth/signup`, `GET /auth/confirm-email`, `POST /api/auth/signin`, `GET /dashboard`, `POST /api/auth/signout`, `GET /dashboard` → redirected to `GET /auth/signin` — all `Ok`. (Note: an earlier sign-in attempt hit `Email not confirmed` / `otp_expired` before the confirmation link was used correctly — expected first-attempt friction, not a defect; the flow succeeded once the confirmed account was used.)
+- [x] Confirm no `Dynamic require of "..." is not supported` / Node-built-in `ReferenceError`s in the tail output (the known `@supabase/ssr`-on-Workers failure mode without `nodejs_compat`; the flag is already set, this proves it end-to-end against real `workerd`). None observed — every request logged `Ok`.
+- [x] Watch for a CPU-limit-exceeded error (Free tier's 10ms ceiling — the accepted risk). None observed during smoke test.
 
 ### Phase 4 — Wire CI/CD deploy job
 - [ ] Extend `.github/workflows/ci.yml` per the table above.
@@ -103,20 +103,11 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 
 ## Next step tomorrow
 
-Resume with the **Phase 3 browser smoke test** against `https://scene-forge.lukegander.workers.dev`, one check at a time, approving each before moving to the next:
-
-1. Sign up.
-2. Email confirmation (if required by the flow).
-3. Sign in.
-4. Protected `/dashboard` loads.
-5. Sign out.
-6. Unauthenticated visit to `/dashboard` redirects to sign-in.
-
-Only after Phase 3 passes: wire the CI/CD deploy job into `.github/workflows/ci.yml` (Phase 4), run the automated-deploy smoke test (Phase 5), and push to GitHub.
+Phase 3 is complete. Next: wire the CI/CD deploy job into `.github/workflows/ci.yml` (Phase 4), run the automated-deploy smoke test (Phase 5), and push to GitHub.
 
 ## Verification (once executed)
 
 - [x] `npm run build` succeeds locally before any deploy.
 - [x] First manual `wrangler deploy` succeeds and serves a reachable production URL.
-- [ ] Phase 3 and Phase 5 browser-driven smoke tests (sign up/in/out, protected route) pass against the real deployed Worker with clean `wrangler tail` output.
+- [x] Phase 3 browser-driven smoke test (sign up/in/out, protected route) passes against the real deployed Worker with clean `wrangler tail` output. Phase 5 (post-CI/CD) still pending.
 - [ ] GitHub Actions `ci` and `deploy` jobs both green after merging to `main`.
