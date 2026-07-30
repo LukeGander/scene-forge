@@ -1,7 +1,7 @@
 ---
 project: scene-forge
 platform: Cloudflare Workers
-status: in-progress
+status: completed
 planned_at: 2026-07-08
 updated_at: 2026-07-30
 source: context/foundation/infrastructure.md
@@ -9,7 +9,7 @@ source: context/foundation/infrastructure.md
 
 ## Status
 
-**In progress — first manual deploy succeeded; Phase 3 smoke test passed; CI/CD wiring (Phase 4) is complete; Phase 5 (automated-deploy smoke test) is next.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. `SUPABASE_URL`/`SUPABASE_KEY` are wired into both Wrangler secrets and GitHub Actions secrets (names verified, values never displayed). `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). `npm run build` succeeded locally, and `npx wrangler deploy` succeeded after registering the `lukegander` workers.dev subdomain — production URL is `https://scene-forge.lukegander.workers.dev`. The full auth flow (sign up, email confirmation, sign in, protected `/dashboard`, sign out, unauthenticated redirect) has been smoke-tested against production with `wrangler tail` running and passed cleanly — no worker errors, no CPU-limit issues. `.github/workflows/ci.yml` now contains the Cloudflare Workers deploy job (commit `8992484`); local `npm run build` passed and the workflow YAML parsed successfully with the existing local parser before the commit. Nothing has been pushed to GitHub yet. This file exists so the plan can be resumed in a future session without re-deriving it.
+**Completed — the full manual-to-automated deploy pipeline (Phases 0–5) is verified end to end.** Cloudflare account (Free tier), `wrangler login`, the scoped Cloudflare API token, and the Cloudflare-related GitHub secrets are all in place. `SUPABASE_URL`/`SUPABASE_KEY` are wired into both Wrangler secrets and GitHub Actions secrets (names verified, values never displayed). `wrangler.jsonc` and `package.json` have been renamed and committed (Phase 0). `npm run build` succeeded locally, and `npx wrangler deploy` succeeded after registering the `lukegander` workers.dev subdomain — production URL is `https://scene-forge.lukegander.workers.dev`. The full auth flow (sign up, email confirmation, sign in, protected `/dashboard`, sign out, unauthenticated redirect) has been smoke-tested against production with `wrangler tail` running and passed cleanly — no worker errors, no CPU-limit issues. `.github/workflows/ci.yml` now contains the Cloudflare Workers deploy job (commit `8992484`). The first push of `main` to `origin` (commit `5976e64`) triggered GitHub Actions run [`30568881045`](https://github.com/LukeGander/scene-forge/actions/runs/30568881045): both `ci` and `deploy` jobs succeeded. A manual, browser-driven production smoke test against `https://scene-forge.lukegander.workers.dev` passed all five checks (landing page, sign in, authenticated `/dashboard`, sign out, unauthenticated redirect) on 2026-07-30. The newest Cloudflare Worker version, `f15f7951-9a6c-417c-8884-54960c03eb69` (created 2026-07-30T18:07:43–44Z), is correlated to commit `5976e64` by timing only — it falls inside the `deploy` job's execution window (18:06:51Z–18:07:48Z) and is the only deployment since 2026-07-19 — **not** by explicit commit-SHA metadata, since the current `wrangler deploy` invocation doesn't pass one (`Source: Unknown (deployment)`, `Message: -` in `wrangler deployments list`) — a non-blocking note in Phase 5 suggests adding this for future deployments. This file exists so the plan can be resumed in a future session without re-deriving it.
 
 ## Context
 
@@ -85,10 +85,12 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 ### Phase 4 — Wire CI/CD deploy job — COMPLETED 2026-07-30
 - [x] Extend `.github/workflows/ci.yml` per the table above. `.github/workflows/ci.yml` now contains the Cloudflare Workers deploy job. Local `npm run build` passed and the workflow YAML parsed successfully with the existing local parser. Committed as `8992484` — "Add Cloudflare Workers deployment workflow".
 
-### Phase 5 — Smoke test (automated deploy) — NEXT
-- [ ] Merge a trivial PR to `main`; confirm `ci` and `deploy` jobs both green.
-- [ ] Re-run the Phase 3 smoke test against production.
-- [ ] `wrangler deployments list` — confirm the new version ties to the merge commit SHA (rollback target).
+### Phase 5 — Smoke test (automated deploy) — COMPLETED 2026-07-30
+- [x] Push `main` to `origin` (first-ever push; no existing remote `main` to PR against); confirm `ci` and `deploy` jobs both green. GitHub Actions run `30568881045` (commit `5976e64`): `ci` succeeded, `deploy` succeeded.
+- [x] Re-run the Phase 3 smoke test against production — PASSED 2026-07-30 (manual, in-browser against `https://scene-forge.lukegander.workers.dev`): public landing page loads, sign in works, authenticated `/dashboard` loads, sign out works, unauthenticated `/dashboard` redirects to sign-in.
+- [x] `wrangler deployments list` — newest version is `f15f7951-9a6c-417c-8884-54960c03eb69` (created 2026-07-30T18:07:43–44Z). Correlated to commit `5976e64` **by timing** (falls inside the `deploy` job's 18:06:51Z–18:07:48Z window; only deployment since 2026-07-19) — **not** by explicit commit-SHA metadata, since Cloudflare's deployment record for this entry shows `Source: Unknown (deployment)` and `Message: -`.
+
+  *Non-blocking note*: future deployments could pass the commit SHA as the Wrangler deployment message (e.g. `--message`) for direct traceability instead of timing correlation.
 
 ### Phase 6 — Edge-case hardening checklist (ongoing)
 - [ ] Any future dependency bump touching `@supabase/ssr`/`@supabase/supabase-js` (or later `@anthropic-ai/sdk`): deploy to a throwaway preview version (`wrangler versions upload`) and re-run the smoke test before merging.
@@ -103,11 +105,13 @@ No changes needed to `astro.config.mjs` (env schema already matches the planned 
 
 ## Next step tomorrow
 
-Phase 4 is complete. Next: run the automated-deploy smoke test (Phase 5) — merge a trivial PR to `main`, confirm `ci` and `deploy` jobs both green, and re-run the Phase 3 smoke test against production.
+Phase 5 is complete — the deployment plan is fully executed. Remaining items are the ongoing Phase 6/7 hardening checklist entries; none are blocking.
 
 ## Verification (once executed)
 
 - [x] `npm run build` succeeds locally before any deploy.
 - [x] First manual `wrangler deploy` succeeds and serves a reachable production URL.
-- [x] Phase 3 browser-driven smoke test (sign up/in/out, protected route) passes against the real deployed Worker with clean `wrangler tail` output. Phase 5 (post-CI/CD) still pending.
-- [ ] GitHub Actions `ci` and `deploy` jobs both green after merging to `main`.
+- [x] Phase 3 browser-driven smoke test (sign up/in/out, protected route) passes against the real deployed Worker with clean `wrangler tail` output.
+- [x] GitHub Actions `ci` and `deploy` jobs both green after the first push to `main` — run `30568881045`, commit `5976e64`.
+- [x] Phase 5 post-CI/CD production smoke test (landing page, sign in, authenticated `/dashboard`, sign out, unauthenticated redirect) passes — 2026-07-30.
+- [x] Newest Cloudflare Worker version (`f15f7951-9a6c-417c-8884-54960c03eb69`) identified via `wrangler deployments list`; correlated to commit `5976e64` by timing, not explicit SHA metadata (see non-blocking note in Phase 5).
