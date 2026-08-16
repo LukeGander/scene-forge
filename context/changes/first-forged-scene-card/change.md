@@ -9,6 +9,73 @@ archived_at: null
 
 ## Notes
 
+### Phase 2 manual verification complete (2026-08-16)
+
+All Phase 2 Progress rows (2.1–2.7) are now `[x]` in `plan.md`. Final two manual checks, run today:
+- **2.6** (cross-user access): navigating as a second user to another user's `/scenes/{id}` and `/projects/{id}/scenes/new` both returned a plain `Not found` with no data leak.
+- **2.7** (unauthenticated POST to `/api/projects/create`): first attempt (`curl -d ...` with no `Origin` header) hit Astro's built-in `checkOrigin` CSRF guard (`403 Cross-site POST form submissions are forbidden`) — a different, earlier layer than the auth middleware. Re-tested with a same-origin `Origin` header and no session cookie: `302 Found` / `Location: /auth/signin`, confirming the auth middleware itself redirects rather than executes. No `UnauthProbe` project was created in either case.
+
+Commit for Phase 2 is being prepared (staged, message drafted) but not yet executed — pending explicit go-ahead. Phase 3 has not started.
+
+### Phase 2 paused — resuming tomorrow (2026-08-13)
+
+**Why paused**: user is stopping for the day partway through Phase 2 manual verification. Everything below is code-complete and automated-check-clean; only two manual verification items remain.
+
+**What is done (code-complete, do not redo)**:
+- All Phase 2 files written: `src/pages/projects/new.astro`, `src/components/projects/NewProjectForm.tsx`, `src/pages/api/projects/create.ts`, `src/pages/projects/[projectId]/scenes/new.astro`, `src/components/scenes/NewSceneForm.tsx`, `src/pages/api/scenes/create.ts`, `src/pages/scenes/[id].astro`, `src/pages/dashboard.astro` (New Project link), `src/middleware.ts` (extended `PROTECTED_ROUTES`).
+- Tooling deviations applied and recorded (see "Phase 2 tooling deviations" note below): `.astro`-scoped `no-misused-promises` disable, scoped `no-unnecessary-condition` disables around Supabase null-checks.
+- Runtime bug fixes applied and recorded (see "Phase 2 runtime fixes" note below): the GRANT migration (`supabase/migrations/20260813210000_grant_scene_forge_core_privileges.sql`) and the `<Topbar />` wiring on all three new pages.
+- Progress rows 2.1–2.3 (automated: lint/astro check/build) are already flipped `[x]` in `plan.md`.
+- Automated checks last re-confirmed clean after the Topbar fix: `npm run test` (7/7), `npx astro check` (0 errors), `npm run build` succeeds.
+- Manual verification confirmed so far: sign-in works; creating a project works (post-GRANT-fix); creating a scene works; scene detail page shows the saved title/note; Topbar with Sign out is now visible and working on all three new pages.
+
+**What is NOT done — do not mark Phase 2 complete, do not commit**:
+- Progress rows 2.4 and 2.5 (create project → new-scene form; submit scene note → scene detail page) are manually confirmed working but **not yet flipped `[x]`** in `plan.md` — flip these together with 2.6/2.7 once the remaining checks below pass, per the "don't check off manual items until user-confirmed" rule.
+- Progress row 2.6 — direct navigation to another user's project/scene id must redirect/404 without exposing data. **Not yet tested.**
+- Progress row 2.7 — signed-out access to the new pages/API routes must redirect to sign-in instead of executing. **Partially untested**: unauthenticated POST to `/api/projects/create` specifically still needs to be verified as rejected/redirected and non-executing.
+- No commit has been made for Phase 2. No files are staged.
+- Phase 3 has not started.
+
+**Working tree state at pause** (all uncommitted, matches the Phase 2 touched-file set plus the always-included `plan.md`):
+```
+ M context/changes/first-forged-scene-card/change.md
+ M context/changes/first-forged-scene-card/plan.md
+ M eslint.config.js
+ M src/middleware.ts
+ M src/pages/dashboard.astro
+?? src/components/projects/
+?? src/components/scenes/
+?? src/pages/api/projects/
+?? src/pages/api/scenes/
+?? src/pages/projects/
+?? src/pages/scenes/
+?? supabase/migrations/20260813210000_grant_scene_forge_core_privileges.sql
+```
+
+**Resume checklist (user's explicit sequence)**:
+1. Verify unauthorized/cross-user project or scene access redirects/404s without exposing data (Progress 2.6) — try navigating to another account's `/projects/{id}/scenes/new` and `/scenes/{id}` while signed in as a different user.
+2. Verify unauthenticated POST to `/api/projects/create` is rejected/redirected and does not execute (part of Progress 2.7) — the existing `PROTECTED_ROUTES` extension in `src/middleware.ts` should already cover `/api/projects`, so this should already redirect to `/auth/signin`, but it needs an explicit manual pass.
+3. Once both pass, flip Progress rows 2.4–2.7 to `[x]` in `plan.md` (2.4/2.5 already manually confirmed above, just need the checkbox flip alongside 2.6/2.7).
+4. Show the Phase 2 changed-file summary and diff, then run the Phase 2 commit ritual (stage → dirty-path check → commit message approval → commit → SHA write-back).
+5. Only after that: decide whether to continue into Phase 3.
+
+**Commands that must NOT be run yet**: `git add` / `git commit` for Phase 2, anything from Phase 3.
+
+### Phase 2 runtime fixes found during manual verification (2026-08-13)
+
+1. **`permission denied for table projects`** on project creation. Root cause: the Phase 1 migration created `projects`/`scenes`/`scene_cards` and enabled RLS, but never granted table-level DML privileges to `authenticated` — Postgres rejects at the privilege layer before RLS is ever evaluated. Confirmed via direct `\dp` inspection in the local Postgres container (`authenticated` only had `Dxtm`, not `arwd`) and via `pg_default_acl` (Supabase's default-privilege template intentionally excludes SELECT/INSERT/UPDATE/DELETE from `public` schema defaults). Fixed with a new forward-only migration, `supabase/migrations/20260813210000_grant_scene_forge_core_privileges.sql`, granting `select, insert, update, delete` on all three tables to `authenticated` only (nothing to `anon`). RLS policies untouched. `supabase db reset` re-verified clean; `authenticated` now shows `arwd` on all three tables.
+2. **Missing navigation/sign-out** on the three new Phase 2 pages (`projects/new.astro`, `projects/[projectId]/scenes/new.astro`, `scenes/[id].astro`). Root cause: an existing `src/components/Topbar.astro` (user email + Dashboard/Sign-out links) was only ever wired into the marketing `Welcome.astro` page; `dashboard.astro` hand-rolls its own separate inline sign-out instead of using it, and Phase 2's new pages copied the header-less sign-in/sign-up card layout. Fixed by adding `<Topbar />` (existing component, no new files) to all three pages, restructuring the centered-card wrapper so Topbar sits above the centered content rather than being vertically centered itself. `dashboard.astro` left untouched (pre-existing, out of scope).
+
+Both fixes re-verified: `npm run test` (7/7), `npx astro check` (0 errors), `npm run build` succeeds, migration re-applies cleanly via `supabase db reset`.
+
+### Phase 2 tooling deviations (2026-08-13)
+
+Two eslint adaptations were needed, not present in the plan text (plan is read-only during implementation):
+1. `eslint.config.js`: added `"@typescript-eslint/no-misused-promises": "off"` to the `.astro`-only rule block. `astro-eslint-parser@1.4.0` crashes this rule on any top-level `return` in Astro frontmatter (verified with a trivial repro unrelated to this feature's code) — a pre-existing tool incompatibility, only surfaced now because `scenes/[id].astro` and `projects/[projectId]/scenes/new.astro` are the first pages to use the redirect/404-guard idiom.
+2. In `src/pages/api/projects/create.ts`, `src/pages/api/scenes/create.ts`, and both new `.astro` pages: `@typescript-eslint/no-unnecessary-condition` false-positives on the Supabase `error`/`data` null checks after `.single()` (claims they're always truthy/falsy). Confirmed via `astro check` (0 errors) that the checks are real and necessary; suppressed locally with `eslint-disable`/`eslint-enable` around each guard, with an inline comment explaining why.
+
+Both were approved via the implement skill's mismatch flow before proceeding.
+
 ### Phase 1 manual verification complete (2026-08-13)
 
 WSL 2 / Docker blocker described below is resolved. `npx supabase start` and `npx supabase db reset` both completed successfully; the migration applied cleanly (resolves 1.1). Local Supabase Studio confirmed RLS enabled with the owner policy (`projects_owner_all`, `scenes_owner_all`, `scene_cards_owner_all`) on all three tables (resolves 1.6). The no-key mock path is covered by the passing automated adapter test suite (resolves 1.7). All Phase 1 Progress rows are now `[x]`. Commit for Phase 1 is being prepared; Phase 2 has not started.

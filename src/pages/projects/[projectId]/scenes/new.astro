@@ -1,0 +1,50 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import NewSceneForm from "@/components/scenes/NewSceneForm";
+import { createClient } from "@/lib/supabase";
+
+const { projectId } = Astro.params;
+const { user } = Astro.locals;
+const error = Astro.url.searchParams.get("error");
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (!supabase || !user) {
+  return Astro.redirect("/auth/signin");
+}
+
+if (!projectId) {
+  return new Response("Not found", { status: 404 });
+}
+
+const { data: project, error: projectError } = await supabase
+  .from("projects")
+  .select("id, title")
+  .eq("id", projectId)
+  .eq("user_id", user.id)
+  .single<{ id: string; title: string }>();
+
+// no-unnecessary-condition misreads Supabase's conditional response-union type here;
+// `project`/`projectError` are genuinely nullable at runtime (verified via `astro check`).
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (projectError || !project) {
+  return new Response("Not found", { status: 404 });
+}
+---
+
+<Layout title={`New scene — ${project.title}`}>
+  <div class="bg-cosmic min-h-screen p-4">
+    <Topbar />
+    <div class="flex min-h-[80vh] items-center justify-center">
+      <div class="w-full max-w-md rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+        <h1
+          class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
+        >
+          New scene
+        </h1>
+        <p class="mb-6 text-center text-sm text-blue-100/60">for {project.title}</p>
+        <NewSceneForm projectId={project.id} serverError={error} client:load />
+      </div>
+    </div>
+  </div>
+</Layout>

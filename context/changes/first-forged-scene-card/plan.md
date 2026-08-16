@@ -399,31 +399,31 @@ This is the project's first-ever schema migration — there is no existing data 
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `supabase db reset`
-- [x] 1.2 Adapter unit tests pass: `npm run test`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Type/content checking passes: `npx astro check`
-- [x] 1.5 Build succeeds: `npm run build`
+- [x] 1.1 Migration applies cleanly: `supabase db reset` — 30ccb54
+- [x] 1.2 Adapter unit tests pass: `npm run test` — 30ccb54
+- [x] 1.3 Linting passes: `npm run lint` — 30ccb54
+- [x] 1.4 Type/content checking passes: `npx astro check` — 30ccb54
+- [x] 1.5 Build succeeds: `npm run build` — 30ccb54
 
 #### Manual
 
-- [x] 1.6 Supabase Studio shows RLS enabled with owner policy on all three new tables
-- [x] 1.7 With `ANTHROPIC_API_KEY` unset, `generateSceneCard()` resolves to the mock path
+- [x] 1.6 Supabase Studio shows RLS enabled with owner policy on all three new tables — 30ccb54
+- [x] 1.7 With `ANTHROPIC_API_KEY` unset, `generateSceneCard()` resolves to the mock path — 30ccb54
 
 ### Phase 2: Project & Scene Creation Flow
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Type/content checking passes: `npx astro check`
-- [ ] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Type/content checking passes: `npx astro check`
+- [x] 2.3 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Creator can create a project via the dashboard entry point and land on the new-scene-note form
-- [ ] 2.5 Creator can submit a scene note and land on the scene detail page showing it
-- [ ] 2.6 Direct navigation to another user's project/scene id redirects/404s
-- [ ] 2.7 Signed-out access to the new pages/API routes redirects to sign-in instead of executing
+- [x] 2.4 Creator can create a project via the dashboard entry point and land on the new-scene-note form
+- [x] 2.5 Creator can submit a scene note and land on the scene detail page showing it
+- [x] 2.6 Direct navigation to another user's project/scene id redirects/404s
+- [x] 2.7 Signed-out access to the new pages/API routes redirects to sign-in instead of executing
 
 ### Phase 3: Forge Scene Generation & Card Display
 
