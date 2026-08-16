@@ -1,7 +1,7 @@
 ---
 change_id: first-forged-scene-card
 title: First forged scene card
-status: implemented
+status: impl_reviewed
 created: 2026-08-02
 updated: 2026-08-16
 archived_at: null
