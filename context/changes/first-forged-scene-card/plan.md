@@ -429,15 +429,15 @@ This is the project's first-ever schema migration — there is no existing data 
 
 #### Automated
 
-- [x] 3.1 Adapter unit tests still pass: `npm run test`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Type/content checking passes: `npx astro check`
-- [x] 3.4 Build succeeds: `npm run build`
+- [x] 3.1 Adapter unit tests still pass: `npm run test` — 65f4948
+- [x] 3.2 Linting passes: `npm run lint` — 65f4948
+- [x] 3.3 Type/content checking passes: `npx astro check` — 65f4948
+- [x] 3.4 Build succeeds: `npm run build` — 65f4948
 
 #### Manual
 
-- [x] 3.5 Mock-path card generation shows every required field (populated or "not enough context") at Draft status
-- [x] 3.6 Real Anthropic-path card generation shows every required field
-- [x] 3.7 Spinner + elapsed-time counter visible for the full duration of generation
-- [x] 3.8 Simulated failure shows an error, preserves the note, and "Try again" recovers
-- [x] 3.9 A second test account cannot see the first account's scene/card
+- [x] 3.5 Mock-path card generation shows every required field (populated or "not enough context") at Draft status — 65f4948
+- [x] 3.6 Real Anthropic-path card generation shows every required field — 65f4948
+- [x] 3.7 Spinner + elapsed-time counter visible for the full duration of generation — 65f4948
+- [x] 3.8 Simulated failure shows an error, preserves the note, and "Try again" recovers — 65f4948
+- [x] 3.9 A second test account cannot see the first account's scene/card — 65f4948
