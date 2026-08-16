@@ -72,10 +72,7 @@ function isSceneCardFields(value: unknown): value is SceneCardFields {
   );
 }
 
-export async function generateSceneCardWithAnthropic(
-  input: ForgeSceneInput,
-  apiKey: string,
-): Promise<SceneCardFields> {
+export async function generateSceneCardWithAnthropic(input: ForgeSceneInput, apiKey: string): Promise<SceneCardFields> {
   const client = new Anthropic({ apiKey });
 
   let response: Anthropic.Message;
