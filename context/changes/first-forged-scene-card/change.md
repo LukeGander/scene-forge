@@ -9,6 +9,22 @@ archived_at: null
 
 ## Notes
 
+### Phase 3 navigation-gap investigation (2026-08-16)
+
+Manual verification of Phase 3 surfaced that `/dashboard` has no path back to an existing project/scene beyond "New Project" — only a direct URL (or Supabase Studio) reaches a previously created scene.
+
+**Scope determination**: project/scene browsing/listing is explicitly out of scope for the entire `first-forged-scene-card` plan, not just Phase 3 — see plan.md's "What We're NOT Doing" ("Project/scene browsing or listing beyond the single happy path this slice needs (FR-005/006/013) — that's `S-02`") and roadmap `S-02: browse-projects-and-scenes`, whose own risk note already names this exact gap ("without it a creator with more than one project or scene has no way back in after the first session"). Not pulled forward.
+
+**In-scope path used for manual testing instead**: the existing create-project → create-scene redirect chain (`/dashboard` → New Project → auto-redirect to new-scene form → auto-redirect to `/scenes/{id}`) already lands on a scene detail page without needing a listing UI — this is what Phase 3's manual verification used to reach a test scene.
+
+**Approved plan deviation (dashboard/Topbar consistency)**: `dashboard.astro` was still using its own hand-rolled header (inline "Welcome, {email}" + inline sign-out form) rather than the shared `Topbar` wired into the three Phase 2 pages — a pre-existing gap explicitly left alone during Phase 2 ("dashboard.astro left untouched (pre-existing, out of scope)"). Since every other authenticated page's `Topbar` links back to `/dashboard`, this created a one-way inconsistency. Fixed as a small, approved Phase 3 deviation: `dashboard.astro` now renders `<Topbar />` (same `min-h-screen` + `flex min-h-[80vh] items-center justify-center` restructuring pattern used for the other three pages), with the redundant inline sign-out form removed since `Topbar` already provides it. Not a scope expansion — no new functionality, just adopting the existing shared component. Re-verified clean: `npm run test` (7/7), `npx astro check` (0 errors), `npm run build` succeeds.
+
+Phase 3 not yet marked complete — awaiting manual verification (including confirmation of this dashboard fix) before the commit ritual.
+
+### Phase 3 manual verification complete (2026-08-16)
+
+All Phase 3 Progress rows (3.1–3.9) are now `[x]` in `plan.md`. Confirmed: mock-path generation with no `ANTHROPIC_API_KEY`; real Claude generation with a valid key producing every required field; spinner/elapsed-time visible for the full generation duration; an invalid key surfaces a clear error (401), preserves the scene note, and exposes "Try again"; restoring a valid key lets generation recover via "Try again"; a second test account gets a plain `Not found` for the first account's scene/card with no data leak. The dashboard/Topbar deviation from the navigation-gap investigation above was verified as part of this pass. Commit for Phase 3 is being prepared.
+
 ### Phase 2 manual verification complete (2026-08-16)
 
 All Phase 2 Progress rows (2.1–2.7) are now `[x]` in `plan.md`. Final two manual checks, run today:

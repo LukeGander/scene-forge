@@ -414,30 +414,30 @@ This is the project's first-ever schema migration — there is no existing data 
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Type/content checking passes: `npx astro check`
-- [x] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — a5dbbcd
+- [x] 2.2 Type/content checking passes: `npx astro check` — a5dbbcd
+- [x] 2.3 Build succeeds: `npm run build` — a5dbbcd
 
 #### Manual
 
-- [x] 2.4 Creator can create a project via the dashboard entry point and land on the new-scene-note form
-- [x] 2.5 Creator can submit a scene note and land on the scene detail page showing it
-- [x] 2.6 Direct navigation to another user's project/scene id redirects/404s
-- [x] 2.7 Signed-out access to the new pages/API routes redirects to sign-in instead of executing
+- [x] 2.4 Creator can create a project via the dashboard entry point and land on the new-scene-note form — a5dbbcd
+- [x] 2.5 Creator can submit a scene note and land on the scene detail page showing it — a5dbbcd
+- [x] 2.6 Direct navigation to another user's project/scene id redirects/404s — a5dbbcd
+- [x] 2.7 Signed-out access to the new pages/API routes redirects to sign-in instead of executing — a5dbbcd
 
 ### Phase 3: Forge Scene Generation & Card Display
 
 #### Automated
 
-- [ ] 3.1 Adapter unit tests still pass: `npm run test`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Type/content checking passes: `npx astro check`
-- [ ] 3.4 Build succeeds: `npm run build`
+- [x] 3.1 Adapter unit tests still pass: `npm run test`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Type/content checking passes: `npx astro check`
+- [x] 3.4 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.5 Mock-path card generation shows every required field (populated or "not enough context") at Draft status
-- [ ] 3.6 Real Anthropic-path card generation shows every required field
-- [ ] 3.7 Spinner + elapsed-time counter visible for the full duration of generation
-- [ ] 3.8 Simulated failure shows an error, preserves the note, and "Try again" recovers
-- [ ] 3.9 A second test account cannot see the first account's scene/card
+- [x] 3.5 Mock-path card generation shows every required field (populated or "not enough context") at Draft status
+- [x] 3.6 Real Anthropic-path card generation shows every required field
+- [x] 3.7 Spinner + elapsed-time counter visible for the full duration of generation
+- [x] 3.8 Simulated failure shows an error, preserves the note, and "Try again" recovers
+- [x] 3.9 A second test account cannot see the first account's scene/card
