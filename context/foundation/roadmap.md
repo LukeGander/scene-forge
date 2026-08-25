@@ -3,7 +3,7 @@ project: "Point&Click Scene Forge"
 version: 1
 status: draft
 created: 2026-08-01
-updated: 2026-08-01
+updated: 2026-08-25
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -30,7 +30,7 @@ Solo point-and-click game creators keep scene ideas in scattered, generic notes 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
 | S-01 | first-forged-scene-card | create a minimal project, add a scene note, run Forge Scene, and see a structured scene card | — | US-01, FR-004, FR-012, FR-014, FR-016, FR-017 | ready |
-| S-03 | enforce-scene-readiness | set a scene's status, add notes, and acknowledge design risks — with "Ready" blocked unless the completeness rule is met | S-01 | FR-018, FR-019, FR-020, FR-022 | proposed |
+| S-03 | enforce-scene-readiness | set a scene's status, add notes, and acknowledge design risks — with "Ready" blocked unless the completeness rule is met | S-01 | FR-018, FR-019, FR-020, FR-022 | planning |
 | S-02 | browse-projects-and-scenes | view their project list and browse a project's scenes with current status | S-01 | FR-005, FR-006, FR-013 | proposed |
 | S-04 | add-characters-to-scenes | add and edit characters so Forge Scene can use them as context | S-01 | FR-009, FR-010 | proposed |
 | S-05 | edit-note-after-generation | edit a saved scene note and see the card marked stale if it no longer matches | S-01 | FR-021 | proposed |
@@ -85,7 +85,7 @@ None. The only candidate — an LLM client adapter with a deterministic mock/no-
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** This is what turns the product from a card generator into a readiness gate — the Vision's core differentiator ("flag what's missing before production starts") is only real once this rule is enforced, not just displayed. Sequenced immediately after S-01, ahead of navigation and enrichment slices, so the product's central value claim is validated early rather than left for last.
-- **Status:** proposed
+- **Status:** planning
 
 ### S-02: Creator browses projects and scenes
 
