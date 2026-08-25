@@ -12,7 +12,7 @@
 
 ## Current Course Progress
 
-10xDevs AI Toolkit, Module 2 Lesson 3 (`/10x-impl-review`) just completed for `first-forged-scene-card`. Chain so far: `/10x-init` → `/10x-shape` → `/10x-prd` → `/10x-tech-stack-selector` → `/10x-bootstrapper` → `/10x-roadmap` → `/10x-plan` → `/10x-implement` → `/10x-impl-review`.
+10xDevs AI Toolkit, Module 2 Lesson 3 (`/10x-impl-review`) completed for `first-forged-scene-card`. Module 2 Lesson 4 (research-backed planning chain: `/10x-research` → `/10x-plan` → `/10x-plan-review`) is **in progress**, applied to roadmap slice `S-03` (`enforce-scene-readiness`) — research, plan, and plan review are done; `/10x-implement` has not been run yet. Chain so far: `/10x-init` → `/10x-shape` → `/10x-prd` → `/10x-tech-stack-selector` → `/10x-bootstrapper` → `/10x-roadmap` → `/10x-plan` → `/10x-implement` → `/10x-impl-review` → `/10x-research` → `/10x-plan` → `/10x-plan-review`.
 
 ## Completed Work
 
@@ -23,14 +23,27 @@
 - Delivered end-to-end: auth (pre-existing) → create project → add scene note → run Forge Scene (Anthropic Claude, tool-use forced, with a deterministic no-key mock fallback) → structured scene card displayed with Regenerate.
 - Data model: `projects` / `scenes` / `scene_cards` tables, RLS with `user_id = auth.uid()` owner policies, verified cross-user access returns a plain "Not found" (no data leak).
 - CI/CD pipeline (`.github/workflows/ci.yml`) added and green: lint → build gate on PRs/push to `main`; auto-deploy to Cloudflare Workers on merge to `main`.
+- **S-03 `enforce-scene-readiness` is researched and planned, but NOT implemented yet.** Change status: `plan_reviewed`. Plan review verdict: **SOUND** (post-triage — 4 findings fixed, 1 accepted as a documented risk; pre-triage verdict was REVISE).
+  - Research: `context/changes/enforce-scene-readiness/research.md`
+  - Plan / brief: `context/changes/enforce-scene-readiness/plan.md`, `context/changes/enforce-scene-readiness/plan-brief.md`
+  - Plan review: `context/changes/enforce-scene-readiness/reviews/plan-review.md`
+  - Key decisions locked into the plan (see the plan/brief for full rationale, not duplicated here):
+    - `design_risks` becomes structured `{risk, acknowledged}` objects (was a flat string array) — migration includes a backfill.
+    - Regenerating a card resets status to Draft and clears all risk acknowledgments, but preserves the creator's notes.
+    - Status UI is a hand-rolled 3-pill control (Draft/Needs Work/Ready) — no new UI dependency.
+    - The Ready pill is disabled client-side whenever the completeness rule isn't met (with a tooltip naming what's missing), and the server independently re-validates on save.
+    - The completeness/"Ready-gate" rule (`isReadyEligible()`) is a pure, framework-agnostic function shared by client and server, with unit tests.
+    - Status, notes, and risk acknowledgments all save together via a single explicit "Save" action (no autosave).
+    - The new column is named `scene_cards.creator_notes`, not `notes`, to avoid confusion with the pre-existing `scenes.note` column.
+    - A multi-tab Save/Regenerate race (no version check) was explicitly accepted as a low-impact MVP risk — single-tab races are already structurally prevented by the UI's state machine.
 
 ## Current Repository State
 
-- Branch: `main`, up to date with `origin/main`, working tree clean.
-- Latest commit: `ac6979d` "Complete M2L3 implementation review".
-- Latest CI run on `main`: **success** (run `31967927581`, 2026-08-16).
+- Branch: `main`, working tree clean, **2 commits ahead of `origin/main`** (not yet pushed as of this handoff — includes the M2L4 research/planning materials and the S-03 plan + plan review).
+- Latest local commit: `a143fdf` "Plan and review S-03 scene readiness".
+- Latest CI run confirmed green was on the last **pushed** commit, `ac6979d` (run `31967927581`, 2026-08-16) — CI has not yet run against the 2 unpushed local commits.
 - One earlier CI run failed transiently (`31945286884`, Prettier/CRLF formatting) and was fixed by the very next commit (`7172f3a`) — not an open issue.
-- Live deployment: Cloudflare Workers, per `context/deployment/deploy-plan.md` (not duplicated here — see that file for the verified deploy record).
+- Live deployment: Cloudflare Workers, per `context/deployment/deploy-plan.md` (not duplicated here — see that file for the verified deploy record). No new code has been deployed for S-03 since it isn't implemented yet.
 
 ## Important Technical Setup / Local Development Notes
 
@@ -56,12 +69,13 @@ Full register: `context/foundation/lessons.md`. Currently two entries:
 
 ## Next Recommended Step
 
-**Roadmap fact**: per `context/foundation/roadmap.md`'s dependency graph, S-01 is done, so its four dependents — S-02, S-03, S-04, S-05 — are all now unblocked and can proceed in any order or in parallel. None is yet marked "ready for `/10x-plan`" in the roadmap's backlog-handoff table; that flip happens when one is chosen to start.
+`/10x-implement enforce-scene-readiness phase 1` — S-03's plan is written and plan-reviewed (SOUND post-triage), but **implementation has not started**. Phase 1 covers the migration (`creator_notes` column + `design_risks` restructuring/backfill), the updated type contract, the Anthropic adapter wrapping change, and the pure `isReadyEligible()` completeness rule with unit tests. See `context/changes/enforce-scene-readiness/plan.md` for the full phase breakdown (Phase 2: PATCH route; Phase 3: editing UI).
 
-**Recommended** (agent judgment, not roadmap authority): start with **S-03 (`enforce-scene-readiness`)** — the roadmap's own risk note for S-03 frames it as the product's core differentiator (enforcing the "Ready" rule, not just displaying it), so validating it early carries more product risk-reduction than the other three. **S-02 (`browse-projects-and-scenes`)** is the pragmatic runner-up, since it closes the current no-way-back-in navigation gap noted above. Re-evaluate this recommendation against the roadmap file directly before committing to it, since the roadmap may have been edited since this handoff was written.
+Roadmap slices S-02, S-04, S-05 remain unblocked and available in parallel if priorities shift — see `context/foundation/roadmap.md`.
 
 ## Session Notes
 
 - **2026-08-25**: This handoff file created. Repo state as of commit `ac6979d`; CI green; S-01 fully implemented and impl-reviewed; nothing in flight.
+- **2026-08-25 (later)**: Ran the M2L4 research-backed planning chain on roadmap slice S-03 (`enforce-scene-readiness`): `/10x-research` → `/10x-plan` → `/10x-plan-review`. Research and plan are written, plan review triaged to completion (4 findings fixed in the plan, 1 accepted as risk), verdict SOUND. Change status: `plan_reviewed`. Nothing implemented yet — next session should run `/10x-implement enforce-scene-readiness phase 1`. Local repo is 2 commits ahead of `origin/main` (not pushed this session).
 
 <!-- Update this file at the end of each session: bump the date/commit above, note what changed, and adjust "Next Recommended Step" if it moved. -->
