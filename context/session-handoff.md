@@ -12,7 +12,7 @@
 
 ## Current Course Progress
 
-10xDevs AI Toolkit, Module 2 Lesson 3 (`/10x-impl-review`) completed for `first-forged-scene-card`. Module 2 Lesson 4 (research-backed planning chain: `/10x-research` → `/10x-plan` → `/10x-plan-review`) is **in progress**, applied to roadmap slice `S-03` (`enforce-scene-readiness`) — research, plan, and plan review are done; `/10x-implement` has not been run yet. Chain so far: `/10x-init` → `/10x-shape` → `/10x-prd` → `/10x-tech-stack-selector` → `/10x-bootstrapper` → `/10x-roadmap` → `/10x-plan` → `/10x-implement` → `/10x-impl-review` → `/10x-research` → `/10x-plan` → `/10x-plan-review`.
+10xDevs AI Toolkit, Module 2 Lesson 4 (research-backed planning chain: `/10x-research` → `/10x-plan` → `/10x-plan-review` → `/10x-implement` → `/10x-impl-review`) is **complete** for roadmap slice `S-03` (`enforce-scene-readiness`). Chain so far: `/10x-init` → `/10x-shape` → `/10x-prd` → `/10x-tech-stack-selector` → `/10x-bootstrapper` → `/10x-roadmap` → `/10x-plan` → `/10x-implement` → `/10x-impl-review` → `/10x-research` → `/10x-plan` → `/10x-plan-review` → `/10x-implement` → `/10x-impl-review`. `/10x-archive enforce-scene-readiness` has not been run yet.
 
 ## Completed Work
 
@@ -23,11 +23,13 @@
 - Delivered end-to-end: auth (pre-existing) → create project → add scene note → run Forge Scene (Anthropic Claude, tool-use forced, with a deterministic no-key mock fallback) → structured scene card displayed with Regenerate.
 - Data model: `projects` / `scenes` / `scene_cards` tables, RLS with `user_id = auth.uid()` owner policies, verified cross-user access returns a plain "Not found" (no data leak).
 - CI/CD pipeline (`.github/workflows/ci.yml`) added and green: lint → build gate on PRs/push to `main`; auto-deploy to Cloudflare Workers on merge to `main`.
-- **S-03 `enforce-scene-readiness` is researched and planned, but NOT implemented yet.** Change status: `plan_reviewed`. Plan review verdict: **SOUND** (post-triage — 4 findings fixed, 1 accepted as a documented risk; pre-triage verdict was REVISE).
+- **S-03 `enforce-scene-readiness` is fully implemented AND implementation-reviewed.** All 3 phases complete. Change status: `impl_reviewed`. Final `/10x-impl-review` verdict: **APPROVED** (0 critical, 2 warnings — both fixed in triage, 3 observations — accepted as-is, no active risk).
   - Research: `context/changes/enforce-scene-readiness/research.md`
-  - Plan / brief: `context/changes/enforce-scene-readiness/plan.md`, `context/changes/enforce-scene-readiness/plan-brief.md`
-  - Plan review: `context/changes/enforce-scene-readiness/reviews/plan-review.md`
-  - Key decisions locked into the plan (see the plan/brief for full rationale, not duplicated here):
+  - Plan (incl. mid-Phase-2 addendum): `context/changes/enforce-scene-readiness/plan.md`
+  - Plan review: `context/changes/enforce-scene-readiness/reviews/plan-review.md` (verdict: SOUND post-triage)
+  - Impl review: `context/changes/enforce-scene-readiness/reviews/impl-review.md` (verdict: APPROVED)
+  - Change log / phase commits: `context/changes/enforce-scene-readiness/change.md`
+  - Key decisions locked into the plan (see the plan for full rationale, not duplicated here):
     - `design_risks` becomes structured `{risk, acknowledged}` objects (was a flat string array) — migration includes a backfill.
     - Regenerating a card resets status to Draft and clears all risk acknowledgments, but preserves the creator's notes.
     - Status UI is a hand-rolled 3-pill control (Draft/Needs Work/Ready) — no new UI dependency.
@@ -36,14 +38,15 @@
     - Status, notes, and risk acknowledgments all save together via a single explicit "Save" action (no autosave).
     - The new column is named `scene_cards.creator_notes`, not `notes`, to avoid confusion with the pre-existing `scenes.note` column.
     - A multi-tab Save/Regenerate race (no version check) was explicitly accepted as a low-impact MVP risk — single-tab races are already structurally prevented by the UI's state machine.
+    - Mid-implementation addendum (documented in the plan): `ANTHROPIC_WORKSPACE_ID` header support for workspace-scoped Anthropic keys, and a `middleware.ts` fix so signed-out `/api/*` requests return 401 JSON instead of redirecting to the sign-in page.
 
 ## Current Repository State
 
-- Branch: `main`, working tree clean, **2 commits ahead of `origin/main`** (not yet pushed as of this handoff — includes the M2L4 research/planning materials and the S-03 plan + plan review).
-- Latest local commit: `a143fdf` "Plan and review S-03 scene readiness".
-- Latest CI run confirmed green was on the last **pushed** commit, `ac6979d` (run `31967927581`, 2026-08-16) — CI has not yet run against the 2 unpushed local commits.
+- Branch: `main`, working tree clean, **5 commits ahead of `origin/main`** (not yet pushed as of this handoff — includes the M2L4 research/planning materials plus all of S-03's implementation and review).
+- Latest local commit: `85f7746` "chore(enforce-scene-readiness): implementation review follow-ups". Full S-03 commit sequence: `40c8564` (p1) → `d38b050` (p2) → `055b619` (p3) → `f076b40` (epilogue) → `85f7746` (impl-review follow-ups).
+- Latest CI run confirmed green was on the last **pushed** commit, `ac6979d` (run `31967927581`, 2026-08-16) — CI has **not yet run** against these 5 unpushed local commits.
 - One earlier CI run failed transiently (`31945286884`, Prettier/CRLF formatting) and was fixed by the very next commit (`7172f3a`) — not an open issue.
-- Live deployment: Cloudflare Workers, per `context/deployment/deploy-plan.md` (not duplicated here — see that file for the verified deploy record). No new code has been deployed for S-03 since it isn't implemented yet.
+- Live deployment: Cloudflare Workers, per `context/deployment/deploy-plan.md` (not duplicated here — see that file for the verified deploy record). No new code has been deployed for S-03 yet — it will deploy automatically on merge to `main` once pushed, per the CI/CD pipeline.
 
 ## Important Technical Setup / Local Development Notes
 
@@ -69,7 +72,9 @@ Full register: `context/foundation/lessons.md`. Currently two entries:
 
 ## Next Recommended Step
 
-`/10x-implement enforce-scene-readiness phase 1` — S-03's plan is written and plan-reviewed (SOUND post-triage), but **implementation has not started**. Phase 1 covers the migration (`creator_notes` column + `design_risks` restructuring/backfill), the updated type contract, the Anthropic adapter wrapping change, and the pure `isReadyEligible()` completeness rule with unit tests. See `context/changes/enforce-scene-readiness/plan.md` for the full phase breakdown (Phase 2: PATCH route; Phase 3: editing UI).
+1. `git push` — publish the 5 local commits to `origin/main`.
+2. Verify the CI run goes green (lint → build gate) against the pushed commits.
+3. `/10x-archive enforce-scene-readiness` — S-03 is fully implemented and impl-reviewed (APPROVED); archiving closes out the change folder and flips its roadmap item to `done`.
 
 Roadmap slices S-02, S-04, S-05 remain unblocked and available in parallel if priorities shift — see `context/foundation/roadmap.md`.
 
@@ -77,5 +82,6 @@ Roadmap slices S-02, S-04, S-05 remain unblocked and available in parallel if pr
 
 - **2026-08-25**: This handoff file created. Repo state as of commit `ac6979d`; CI green; S-01 fully implemented and impl-reviewed; nothing in flight.
 - **2026-08-25 (later)**: Ran the M2L4 research-backed planning chain on roadmap slice S-03 (`enforce-scene-readiness`): `/10x-research` → `/10x-plan` → `/10x-plan-review`. Research and plan are written, plan review triaged to completion (4 findings fixed in the plan, 1 accepted as risk), verdict SOUND. Change status: `plan_reviewed`. Nothing implemented yet — next session should run `/10x-implement enforce-scene-readiness phase 1`. Local repo is 2 commits ahead of `origin/main` (not pushed this session).
+- **2026-08-27**: Ran `/10x-implement enforce-scene-readiness` through all 3 phases (data model/readiness rule → PATCH update route → editing UI), each with automated + human-confirmed manual verification and its own commit. Mid-Phase-2, fixed two issues found live during manual testing: added `ANTHROPIC_WORKSPACE_ID` header support for workspace-scoped Anthropic keys, and fixed a `middleware.ts` bug where signed-out `/api/*` requests were silently redirected to the sign-in page instead of returning 401 JSON. Ran the full `/10x-impl-review` afterward — verdict **APPROVED** (0 critical, 2 warnings both fixed in triage, 3 observations accepted as-is). Change status: `impl_reviewed`. Local repo is 5 commits ahead of `origin/main` (not pushed this session). Next session should push, verify CI, then archive.
 
 <!-- Update this file at the end of each session: bump the date/commit above, note what changed, and adjust "Next Recommended Step" if it moved. -->
