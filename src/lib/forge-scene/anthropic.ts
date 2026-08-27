@@ -59,7 +59,11 @@ Scene: ${input.sceneTitle}
 Note: ${input.sceneNote}`;
 }
 
-function isSceneCardFields(value: unknown): value is SceneCardFields {
+interface RawSceneCardFields extends Omit<SceneCardFields, "designRisks"> {
+  designRisks: string[];
+}
+
+function isRawSceneCardFields(value: unknown): value is RawSceneCardFields {
   if (!value || typeof value !== "object") return false;
   const card = value as Record<string, unknown>;
   return (
@@ -92,9 +96,13 @@ export async function generateSceneCardWithAnthropic(input: ForgeSceneInput, api
   }
 
   const toolUse = response.content.find((block) => block.type === "tool_use");
-  if (!toolUse || !isSceneCardFields(toolUse.input)) {
+  if (!toolUse || !isRawSceneCardFields(toolUse.input)) {
     throw new ForgeSceneGenerationError("Anthropic response did not contain a valid scene card");
   }
 
-  return toolUse.input;
+  const raw = toolUse.input;
+  return {
+    ...raw,
+    designRisks: raw.designRisks.map((risk) => ({ risk, acknowledged: false })),
+  };
 }

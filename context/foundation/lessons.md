@@ -15,3 +15,10 @@
 - **Problem**: The Aug 2 schema migration enabled RLS and owner policies but never granted table-level DML privileges (select/insert/update/delete) to `authenticated`. Postgres denies access at the privilege layer before RLS is ever evaluated, so every query failed with "permission denied for table" until an Aug 13 follow-up migration added the grants.
 - **Rule**: Every migration that creates a table and enables RLS must GRANT select/insert/update/delete to `authenticated` in the same migration.
 - **Applies to**: plan, implement, impl-review
+
+## updated_at needs an explicit trigger or write, not just a default
+
+- **Context**: Any table with an `updated_at timestamptz not null default now()` column and no BEFORE UPDATE trigger — currently `projects`, `scenes`, `scene_cards` (supabase/migrations/20260802120000_create_scene_forge_core.sql).
+- **Problem**: `default now()` only fires on INSERT. Regenerating a scene card (forge.ts's upsert) bumps `generated_at` but leaves `updated_at` frozen at creation time — observed during enforce-scene-readiness Phase 1 manual verification. The upcoming Phase 2 PATCH route will hit the same gap since its `.update()` call doesn't set `updated_at` either.
+- **Rule**: If a timestamp column is named `updated_at`, either wire a BEFORE UPDATE trigger (e.g. `moddatetime`) in the same migration that creates the table, or explicitly set `updated_at` in every `.update()`/`.upsert()` call. Don't leave it implying auto-tracking it doesn't do.
+- **Applies to**: plan, implement, impl-review

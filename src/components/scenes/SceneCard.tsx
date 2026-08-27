@@ -79,7 +79,7 @@ export function SceneCard({ card, source }: Props) {
       </Field>
 
       <Field label="Design Risks">
-        <ListValue values={card.designRisks} />
+        <ListValue values={card.designRisks.map((risk) => risk.risk)} />
       </Field>
     </div>
   );

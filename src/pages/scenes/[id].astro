@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
 import ForgeSceneButton from "@/components/scenes/ForgeSceneButton";
 import { createClient } from "@/lib/supabase";
-import type { SceneCardFields } from "@/lib/forge-scene/types";
+import type { SceneCardFields, DesignRisk } from "@/lib/forge-scene/types";
 
 const { id } = Astro.params;
 const { user } = Astro.locals;
@@ -37,7 +37,7 @@ interface SceneCardRow {
   characters: SceneCardFields["characters"];
   interactive_element: string;
   required_assets: string[];
-  design_risks: string[];
+  design_risks: DesignRisk[];
   generation_source: "mock" | "anthropic";
 }
 

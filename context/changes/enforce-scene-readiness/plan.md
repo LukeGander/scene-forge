@@ -271,17 +271,17 @@ The backfill UPDATE in Phase 1's migration only rewrites rows where `design_risk
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly: `supabase db reset`
-- [ ] 1.2 Unit tests pass: `npm run test`
-- [ ] 1.3 Linting passes: `npm run lint`
-- [ ] 1.4 Type/content checking passes: `npx astro check`
-- [ ] 1.5 Build succeeds: `npm run build`
+- [x] 1.1 Migration applies cleanly: `supabase db reset`
+- [x] 1.2 Unit tests pass: `npm run test`
+- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.4 Type/content checking passes: `npx astro check`
+- [x] 1.5 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 1.6 Supabase Studio shows the new `creator_notes` column and `design_risks` stored as `{risk, acknowledged}` objects
-- [ ] 1.7 Mock-path forge still produces `design_risks: []` and `notes` defaults empty
-- [ ] 1.8 A `notes` value survives a regenerate triggered directly against the existing forge route (curl), confirming the upsert-preserves-omitted-columns assumption early
+- [x] 1.6 Supabase Studio shows the new `creator_notes` column and `design_risks` stored as `{risk, acknowledged}` objects
+- [x] 1.7 Mock-path forge still produces `design_risks: []` and `notes` defaults empty
+- [x] 1.8 A `notes` value survives a regenerate triggered directly against the existing forge route (curl), confirming the upsert-preserves-omitted-columns assumption early
 
 ### Phase 2: Card Update API Route
 
