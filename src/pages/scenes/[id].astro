@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
 import ForgeSceneButton from "@/components/scenes/ForgeSceneButton";
 import { createClient } from "@/lib/supabase";
-import type { SceneCardFields, DesignRisk } from "@/lib/forge-scene/types";
+import type { SceneCardRecord, DesignRisk } from "@/lib/forge-scene/types";
 
 const { id } = Astro.params;
 const { user } = Astro.locals;
@@ -34,21 +34,25 @@ if (error || !scene) {
 interface SceneCardRow {
   player_goal: string;
   obstacle: string;
-  characters: SceneCardFields["characters"];
+  characters: SceneCardRecord["characters"];
   interactive_element: string;
   required_assets: string[];
   design_risks: DesignRisk[];
+  status: SceneCardRecord["status"];
+  creator_notes: string;
   generation_source: "mock" | "anthropic";
 }
 
 const { data: sceneCard } = await supabase
   .from("scene_cards")
-  .select("player_goal, obstacle, characters, interactive_element, required_assets, design_risks, generation_source")
+  .select(
+    "player_goal, obstacle, characters, interactive_element, required_assets, design_risks, status, creator_notes, generation_source",
+  )
   .eq("scene_id", scene.id)
   .eq("user_id", user.id)
   .maybeSingle<SceneCardRow>();
 
-const initialCard: SceneCardFields | null = sceneCard
+const initialRecord: SceneCardRecord | null = sceneCard
   ? {
       playerGoal: sceneCard.player_goal,
       obstacle: sceneCard.obstacle,
@@ -56,6 +60,8 @@ const initialCard: SceneCardFields | null = sceneCard
       interactiveElement: sceneCard.interactive_element,
       requiredAssets: sceneCard.required_assets,
       designRisks: sceneCard.design_risks,
+      status: sceneCard.status,
+      notes: sceneCard.creator_notes,
     }
   : null;
 const initialSource = sceneCard?.generation_source ?? null;
@@ -71,7 +77,7 @@ const initialSource = sceneCard?.generation_source ?? null;
         {scene.title}
       </h1>
       <p class="whitespace-pre-wrap text-blue-100/80">{scene.note}</p>
-      <ForgeSceneButton sceneId={scene.id} initialCard={initialCard} initialSource={initialSource} client:load />
+      <ForgeSceneButton sceneId={scene.id} initialRecord={initialRecord} initialSource={initialSource} client:load />
     </div>
   </div>
 </Layout>

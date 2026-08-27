@@ -3,20 +3,20 @@ import { RotateCcw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ServerError } from "@/components/auth/ServerError";
 import { SceneCard } from "@/components/scenes/SceneCard";
-import type { SceneCardFields } from "@/lib/forge-scene/types";
+import type { SceneCardFields, SceneCardRecord } from "@/lib/forge-scene/types";
 
 type GenerationSource = "mock" | "anthropic";
 
 interface Props {
   sceneId: string;
-  initialCard?: SceneCardFields | null;
+  initialRecord?: SceneCardRecord | null;
   initialSource?: GenerationSource | null;
 }
 
 type State =
   | { phase: "idle" }
   | { phase: "loading"; elapsedSeconds: number }
-  | { phase: "success"; card: SceneCardFields; source: GenerationSource }
+  | { phase: "success"; record: SceneCardRecord; source: GenerationSource; version: number }
   | { phase: "error"; message: string };
 
 interface ForgeResponseBody {
@@ -25,9 +25,11 @@ interface ForgeResponseBody {
   error?: string;
 }
 
-export default function ForgeSceneButton({ sceneId, initialCard, initialSource }: Props) {
+export default function ForgeSceneButton({ sceneId, initialRecord, initialSource }: Props) {
   const [state, setState] = useState<State>(
-    initialCard && initialSource ? { phase: "success", card: initialCard, source: initialSource } : { phase: "idle" },
+    initialRecord && initialSource
+      ? { phase: "success", record: initialRecord, source: initialSource, version: 0 }
+      : { phase: "idle" },
   );
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -38,6 +40,8 @@ export default function ForgeSceneButton({ sceneId, initialCard, initialSource }
   }, []);
 
   async function forge() {
+    const previousNotes = state.phase === "success" ? state.record.notes : "";
+    const nextVersion = (state.phase === "success" ? state.version : 0) + 1;
     const startedAt = Date.now();
     setState({ phase: "loading", elapsedSeconds: 0 });
     timerRef.current = setInterval(() => {
@@ -57,7 +61,12 @@ export default function ForgeSceneButton({ sceneId, initialCard, initialSource }
         return;
       }
 
-      setState({ phase: "success", card: body.card, source: body.source });
+      setState({
+        phase: "success",
+        record: { ...body.card, status: "draft", notes: previousNotes },
+        source: body.source,
+        version: nextVersion,
+      });
     } catch {
       setState({ phase: "error", message: "Network error — could not reach the server" });
     } finally {
@@ -69,7 +78,15 @@ export default function ForgeSceneButton({ sceneId, initialCard, initialSource }
   if (state.phase === "success") {
     return (
       <div className="space-y-4">
-        <SceneCard card={state.card} source={state.source} />
+        <SceneCard
+          key={state.version}
+          sceneId={sceneId}
+          record={state.record}
+          source={state.source}
+          onSaved={(record) => {
+            setState({ phase: "success", record, source: state.source, version: state.version + 1 });
+          }}
+        />
         <Button onClick={forge} variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/20">
           <RotateCcw className="size-4" />
           Regenerate

@@ -287,31 +287,31 @@ The backfill UPDATE in Phase 1's migration only rewrites rows where `design_risk
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Type/content checking passes: `npx astro check`
-- [x] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — d38b050
+- [x] 2.2 Type/content checking passes: `npx astro check` — d38b050
+- [x] 2.3 Build succeeds: `npm run build` — d38b050
 
 #### Manual
 
-- [x] 2.4 PATCH to `draft`/`needs_work` always succeeds
-- [x] 2.5 PATCH to `ready` when the rule is unmet returns 400 with missing reasons
-- [x] 2.6 PATCH to `ready` when the rule is met (real API key) succeeds
-- [x] 2.7 Signed-out/cross-user PATCH is rejected without exposing data
+- [x] 2.4 PATCH to `draft`/`needs_work` always succeeds — d38b050
+- [x] 2.5 PATCH to `ready` when the rule is unmet returns 400 with missing reasons — d38b050
+- [x] 2.6 PATCH to `ready` when the rule is met (real API key) succeeds — d38b050
+- [x] 2.7 Signed-out/cross-user PATCH is rejected without exposing data — d38b050
 
 ### Phase 3: Card Editing UI
 
 #### Automated
 
-- [ ] 3.1 Unit tests still pass: `npm run test`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Type/content checking passes: `npx astro check`
-- [ ] 3.4 Build succeeds: `npm run build`
+- [x] 3.1 Unit tests still pass: `npm run test`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Type/content checking passes: `npx astro check`
+- [x] 3.4 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.5 Mock path: Ready pill disabled with an explanatory tooltip
-- [ ] 3.6 Real key + all criteria met: Ready pill enabled and savable
-- [ ] 3.7 Acknowledging/un-acknowledging risks toggles and persists
-- [ ] 3.8 Notes field saves and persists across reload
-- [ ] 3.9 Regenerate resets status/acknowledgments but preserves notes
-- [ ] 3.10 Second test account cannot PATCH or view the first account's card
+- [x] 3.5 Mock path: Ready pill disabled with an explanatory tooltip
+- [x] 3.6 Real key + all criteria met: Ready pill enabled and savable
+- [x] 3.7 Acknowledging/un-acknowledging risks toggles and persists
+- [x] 3.8 Notes field saves and persists across reload
+- [x] 3.9 Regenerate resets status/acknowledgments but preserves notes
+- [x] 3.10 Second test account cannot PATCH or view the first account's card
