@@ -302,16 +302,16 @@ The backfill UPDATE in Phase 1's migration only rewrites rows where `design_risk
 
 #### Automated
 
-- [x] 3.1 Unit tests still pass: `npm run test`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Type/content checking passes: `npx astro check`
-- [x] 3.4 Build succeeds: `npm run build`
+- [x] 3.1 Unit tests still pass: `npm run test` — 055b619
+- [x] 3.2 Linting passes: `npm run lint` — 055b619
+- [x] 3.3 Type/content checking passes: `npx astro check` — 055b619
+- [x] 3.4 Build succeeds: `npm run build` — 055b619
 
 #### Manual
 
-- [x] 3.5 Mock path: Ready pill disabled with an explanatory tooltip
-- [x] 3.6 Real key + all criteria met: Ready pill enabled and savable
-- [x] 3.7 Acknowledging/un-acknowledging risks toggles and persists
-- [x] 3.8 Notes field saves and persists across reload
-- [x] 3.9 Regenerate resets status/acknowledgments but preserves notes
-- [x] 3.10 Second test account cannot PATCH or view the first account's card
+- [x] 3.5 Mock path: Ready pill disabled with an explanatory tooltip — 055b619
+- [x] 3.6 Real key + all criteria met: Ready pill enabled and savable — 055b619
+- [x] 3.7 Acknowledging/un-acknowledging risks toggles and persists — 055b619
+- [x] 3.8 Notes field saves and persists across reload — 055b619
+- [x] 3.9 Regenerate resets status/acknowledgments but preserves notes — 055b619
+- [x] 3.10 Second test account cannot PATCH or view the first account's card — 055b619
