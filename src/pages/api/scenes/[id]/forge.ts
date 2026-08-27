@@ -97,6 +97,7 @@ export const POST: APIRoute = async (context) => {
       design_risks: card.designRisks,
       generation_source: source,
       generated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     },
     { onConflict: "scene_id" },
   );

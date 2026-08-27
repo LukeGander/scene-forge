@@ -263,6 +263,13 @@ The backfill UPDATE in Phase 1's migration only rewrites rows where `design_risk
 - Prior plan/decisions: `context/changes/first-forged-scene-card/plan.md` (schema, adapter, ownership-check conventions), `context/changes/first-forged-scene-card/reviews/plan-review.md` (F4 — why `design_risks` was left simple)
 - Existing JSON-route convention: `src/pages/api/scenes/[id]/forge.ts:1-108`
 
+## Addendum (raised mid-Phase-2, not in original scope)
+
+Two changes landed during Phase 2 implementation at explicit user request, outside this plan's original "Changes Required" sections. Both were implemented, tested, and committed as part of Phase 2 (`d38b050`); flagged here for the record per `reviews/impl-review.md` F1.
+
+- **`ANTHROPIC_WORKSPACE_ID` header support**: the Anthropic Personal key in use is workspace-scoped and requires an `anthropic-workspace-id` header. Added `ANTHROPIC_WORKSPACE_ID` as an optional, secret server env var (`astro.config.mjs`, `.env.example`), threaded it through `generateSceneCard()` (`adapter.ts`) → `generateSceneCardWithAnthropic()` (`anthropic.ts`) → the Anthropic client's `defaultHeaders`, and wired `forge.ts` to read and pass it. Absent-by-default; legacy/workspace-less keys are unaffected. `adapter.test.ts` updated for the new 3-arg call signature.
+- **`middleware.ts` signed-out-API fix**: manual verification of Phase 2's PATCH route found that signed-out requests to any `/api/*` route were silently redirected to `/auth/signin` (302, followed transparently by `fetch`, landing on HTML with a `200` status) instead of returning the route's own `401` JSON — because `middleware.ts`'s blanket protected-route redirect ran before any route handler's own auth check. Fixed by excluding `/api/*` paths from the redirect so they fall through to each route's existing `401` JSON handling. This also fixes the same pre-existing gap in `forge.ts` and `scenes/create.ts`/`projects/create.ts`, not just the new `card.ts` route.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
