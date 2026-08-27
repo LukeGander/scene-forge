@@ -16,7 +16,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
-    if (!context.locals.user) {
+    if (!context.locals.user && !context.url.pathname.startsWith("/api/")) {
       return context.redirect("/auth/signin");
     }
   }

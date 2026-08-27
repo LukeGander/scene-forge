@@ -19,6 +19,7 @@ export default defineConfig({
       SUPABASE_URL: envField.string({ context: "server", access: "secret", optional: true }),
       SUPABASE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       ANTHROPIC_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      ANTHROPIC_WORKSPACE_ID: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },
 });

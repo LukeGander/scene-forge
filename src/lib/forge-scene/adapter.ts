@@ -20,6 +20,7 @@ export interface GenerateSceneCardResult {
 export async function generateSceneCard(
   input: ForgeSceneInput,
   apiKey: string | null | undefined,
+  workspaceId?: string | null,
 ): Promise<GenerateSceneCardResult> {
   if (!apiKey) {
     console.log("[forge-scene] no ANTHROPIC_API_KEY configured, using mock generator");
@@ -28,7 +29,7 @@ export async function generateSceneCard(
 
   console.log("[forge-scene] generating scene card via Anthropic");
   try {
-    const card = await generateSceneCardWithAnthropic(input, apiKey);
+    const card = await generateSceneCardWithAnthropic(input, apiKey, workspaceId);
     console.log("[forge-scene] Anthropic generation succeeded");
     return { card, source: "anthropic" };
   } catch (error) {

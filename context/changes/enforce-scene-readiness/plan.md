@@ -271,32 +271,32 @@ The backfill UPDATE in Phase 1's migration only rewrites rows where `design_risk
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `supabase db reset`
-- [x] 1.2 Unit tests pass: `npm run test`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Type/content checking passes: `npx astro check`
-- [x] 1.5 Build succeeds: `npm run build`
+- [x] 1.1 Migration applies cleanly: `supabase db reset` — 40c8564
+- [x] 1.2 Unit tests pass: `npm run test` — 40c8564
+- [x] 1.3 Linting passes: `npm run lint` — 40c8564
+- [x] 1.4 Type/content checking passes: `npx astro check` — 40c8564
+- [x] 1.5 Build succeeds: `npm run build` — 40c8564
 
 #### Manual
 
-- [x] 1.6 Supabase Studio shows the new `creator_notes` column and `design_risks` stored as `{risk, acknowledged}` objects
-- [x] 1.7 Mock-path forge still produces `design_risks: []` and `notes` defaults empty
-- [x] 1.8 A `notes` value survives a regenerate triggered directly against the existing forge route (curl), confirming the upsert-preserves-omitted-columns assumption early
+- [x] 1.6 Supabase Studio shows the new `creator_notes` column and `design_risks` stored as `{risk, acknowledged}` objects — 40c8564
+- [x] 1.7 Mock-path forge still produces `design_risks: []` and `notes` defaults empty — 40c8564
+- [x] 1.8 A `notes` value survives a regenerate triggered directly against the existing forge route (curl), confirming the upsert-preserves-omitted-columns assumption early — 40c8564
 
 ### Phase 2: Card Update API Route
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Type/content checking passes: `npx astro check`
-- [ ] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Type/content checking passes: `npx astro check`
+- [x] 2.3 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 PATCH to `draft`/`needs_work` always succeeds
-- [ ] 2.5 PATCH to `ready` when the rule is unmet returns 400 with missing reasons
-- [ ] 2.6 PATCH to `ready` when the rule is met (real API key) succeeds
-- [ ] 2.7 Signed-out/cross-user PATCH is rejected without exposing data
+- [x] 2.4 PATCH to `draft`/`needs_work` always succeeds
+- [x] 2.5 PATCH to `ready` when the rule is unmet returns 400 with missing reasons
+- [x] 2.6 PATCH to `ready` when the rule is met (real API key) succeeds
+- [x] 2.7 Signed-out/cross-user PATCH is rejected without exposing data
 
 ### Phase 3: Card Editing UI
 

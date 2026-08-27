@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { generateSceneCard } from "@/lib/forge-scene/adapter";
-import { ANTHROPIC_API_KEY } from "astro:env/server";
+import { ANTHROPIC_API_KEY, ANTHROPIC_WORKSPACE_ID } from "astro:env/server";
 import type { SceneCardFields } from "@/lib/forge-scene/types";
 
 interface SceneRow {
@@ -76,6 +76,7 @@ export const POST: APIRoute = async (context) => {
         sceneNote: scene.note,
       },
       ANTHROPIC_API_KEY,
+      ANTHROPIC_WORKSPACE_ID,
     );
     card = result.card;
     source = result.source;

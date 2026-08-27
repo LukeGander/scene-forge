@@ -76,8 +76,15 @@ function isRawSceneCardFields(value: unknown): value is RawSceneCardFields {
   );
 }
 
-export async function generateSceneCardWithAnthropic(input: ForgeSceneInput, apiKey: string): Promise<SceneCardFields> {
-  const client = new Anthropic({ apiKey });
+export async function generateSceneCardWithAnthropic(
+  input: ForgeSceneInput,
+  apiKey: string,
+  workspaceId?: string | null,
+): Promise<SceneCardFields> {
+  const client = new Anthropic({
+    apiKey,
+    ...(workspaceId ? { defaultHeaders: { "anthropic-workspace-id": workspaceId } } : {}),
+  });
 
   let response: Anthropic.Message;
   try {

@@ -65,7 +65,7 @@ describe("generateSceneCard (adapter)", () => {
 
     expect(result.source).toBe("anthropic");
     expect(result.card).toEqual(fakeCard);
-    expect(generateSceneCardWithAnthropic).toHaveBeenCalledWith(baseInput, "sk-test-key");
+    expect(generateSceneCardWithAnthropic).toHaveBeenCalledWith(baseInput, "sk-test-key", undefined);
   });
 
   it("propagates an Anthropic failure as an error rather than a partial card", async () => {

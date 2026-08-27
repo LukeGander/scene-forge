@@ -22,3 +22,10 @@
 - **Problem**: `default now()` only fires on INSERT. Regenerating a scene card (forge.ts's upsert) bumps `generated_at` but leaves `updated_at` frozen at creation time — observed during enforce-scene-readiness Phase 1 manual verification. The upcoming Phase 2 PATCH route will hit the same gap since its `.update()` call doesn't set `updated_at` either.
 - **Rule**: If a timestamp column is named `updated_at`, either wire a BEFORE UPDATE trigger (e.g. `moddatetime`) in the same migration that creates the table, or explicitly set `updated_at` in every `.update()`/`.upsert()` call. Don't leave it implying auto-tracking it doesn't do.
 - **Applies to**: plan, implement, impl-review
+
+## `npm run lint` can fail repo-wide on CRLF, unrelated to the current change
+
+- **Context**: enforce-scene-readiness Phase 2 — `npm run lint` reported ~892 `prettier/prettier "Delete ␍"` errors across nearly every tracked file (`index.astro`, `signup.astro`, etc.), none of them touched by this phase.
+- **Problem**: A machine with git `core.autocrlf=true` checks out the repo's LF-stored blobs as CRLF locally; prettier then flags every line. Confirmed pre-existing by stashing the phase's changes and re-running lint with an identical error count — the new file added in this phase (`card.ts`) had zero lint errors on its own.
+- **Rule**: If `npm run lint` fails on a huge number of unrelated files with only `Delete ␍` errors, suspect `core.autocrlf` before assuming the current change broke linting. Verify by lint-checking only the new/changed files directly (e.g. `npx eslint <path>`) and by stashing to compare against the pre-change baseline. Don't "fix" it by touching hundreds of unrelated files inside an unrelated phase — that's a separate repo-hygiene task (e.g. `.gitattributes` `text=auto` + a dedicated normalization commit), not something to bundle into a feature phase.
+- **Applies to**: implement, impl-review
