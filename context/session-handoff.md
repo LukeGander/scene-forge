@@ -42,11 +42,14 @@
 
 ## Current Repository State
 
-- Branch: `main`, working tree clean, **5 commits ahead of `origin/main`** (not yet pushed as of this handoff — includes the M2L4 research/planning materials plus all of S-03's implementation and review).
-- Latest local commit: `85f7746` "chore(enforce-scene-readiness): implementation review follow-ups". Full S-03 commit sequence: `40c8564` (p1) → `d38b050` (p2) → `055b619` (p3) → `f076b40` (epilogue) → `85f7746` (impl-review follow-ups).
-- Latest CI run confirmed green was on the last **pushed** commit, `ac6979d` (run `31967927581`, 2026-08-16) — CI has **not yet run** against these 5 unpushed local commits.
+- Branch: `main`, working tree clean, **up to date with `origin/main`** at `2e22d8a` (pushed this session — includes the M2L4 research/planning materials, all of S-03's implementation and review, and the M2L5 Innovate materials).
+- Latest CI run confirmed green was on the last previously-pushed commit, `ac6979d` (run `31967927581`, 2026-08-16) — CI has **not yet run** against the commits pushed this session.
 - One earlier CI run failed transiently (`31945286884`, Prettier/CRLF formatting) and was fixed by the very next commit (`7172f3a`) — not an open issue.
-- Live deployment: Cloudflare Workers, per `context/deployment/deploy-plan.md` (not duplicated here — see that file for the verified deploy record). No new code has been deployed for S-03 yet — it will deploy automatically on merge to `main` once pushed, per the CI/CD pipeline.
+- Live deployment: Cloudflare Workers, per `context/deployment/deploy-plan.md` (not duplicated here — see that file for the verified deploy record). No new code has been deployed for S-03 yet — it will deploy automatically on merge to `main` (CI/CD pipeline already triggered by this session's push).
+- **M2L5 parallel-work exercise in progress**: per `CLAUDE.md`'s Module 2 Lesson 5 section, roadmap slices `S-02` and `S-05` were analyzed as the safest parallel pair (no dependency, no file/schema overlap — `S-04` was excluded from this round because it would conflict with `S-05` on `src/pages/api/scenes/[id]/forge.ts` and `src/lib/forge-scene/types.ts`). Two worktrees were created off this same clean `main` commit (`2e22d8a`):
+  - `../SceneForge-S02-browse-projects-and-scenes` on branch `change/browse-projects-and-scenes`
+  - `../SceneForge-S05-edit-note-after-generation` on branch `change/edit-note-after-generation`
+  - No Claude session or skill command (`/10x-new`, `/10x-plan`, `/10x-implement`) has been run in either worktree yet.
 
 ## Important Technical Setup / Local Development Notes
 
@@ -72,16 +75,17 @@ Full register: `context/foundation/lessons.md`. Currently two entries:
 
 ## Next Recommended Step
 
-1. `git push` — publish the 5 local commits to `origin/main`.
-2. Verify the CI run goes green (lint → build gate) against the pushed commits.
-3. `/10x-archive enforce-scene-readiness` — S-03 is fully implemented and impl-reviewed (APPROVED); archiving closes out the change folder and flips its roadmap item to `done`.
+1. Verify the CI run goes green (lint → build gate) against the commits pushed this session.
+2. `/10x-archive enforce-scene-readiness` — S-03 is fully implemented and impl-reviewed (APPROVED); archiving closes out the change folder and flips its roadmap item to `done`.
+3. For the parallel-work exercise: open one fresh Claude session in each of the two worktrees listed above and, in each, run **only** `/10x-new <change-id>` then `/10x-plan <change-id>` (`browse-projects-and-scenes` in the S-02 worktree, `edit-note-after-generation` in the S-05 worktree). Stop after both plans are written — review both plans before either one starts `/10x-implement`.
 
-Roadmap slices S-02, S-04, S-05 remain unblocked and available in parallel if priorities shift — see `context/foundation/roadmap.md`.
+Roadmap slice S-04 remains unblocked but deliberately excluded from this parallel round — see `context/foundation/roadmap.md` and the note above.
 
 ## Session Notes
 
 - **2026-08-25**: This handoff file created. Repo state as of commit `ac6979d`; CI green; S-01 fully implemented and impl-reviewed; nothing in flight.
 - **2026-08-25 (later)**: Ran the M2L4 research-backed planning chain on roadmap slice S-03 (`enforce-scene-readiness`): `/10x-research` → `/10x-plan` → `/10x-plan-review`. Research and plan are written, plan review triaged to completion (4 findings fixed in the plan, 1 accepted as risk), verdict SOUND. Change status: `plan_reviewed`. Nothing implemented yet — next session should run `/10x-implement enforce-scene-readiness phase 1`. Local repo is 2 commits ahead of `origin/main` (not pushed this session).
 - **2026-08-27**: Ran `/10x-implement enforce-scene-readiness` through all 3 phases (data model/readiness rule → PATCH update route → editing UI), each with automated + human-confirmed manual verification and its own commit. Mid-Phase-2, fixed two issues found live during manual testing: added `ANTHROPIC_WORKSPACE_ID` header support for workspace-scoped Anthropic keys, and fixed a `middleware.ts` bug where signed-out `/api/*` requests were silently redirected to the sign-in page instead of returning 401 JSON. Ran the full `/10x-impl-review` afterward — verdict **APPROVED** (0 critical, 2 warnings both fixed in triage, 3 observations accepted as-is). Change status: `impl_reviewed`. Local repo is 5 commits ahead of `origin/main` (not pushed this session). Next session should push, verify CI, then archive.
+- **2026-08-28**: Added and pushed the M2L5 Innovate materials to `main` (commit `2e22d8a`, includes the previously-unpushed S-03 work). Worked the M2L5 parallel-work exercise: analyzed roadmap slices S-02/S-04/S-05 for dependency, file-overlap, shared-contract, and merge-conflict risk; selected **S-02 (`browse-projects-and-scenes`)** and **S-05 (`edit-note-after-generation`)** as the safest pair to run in parallel (excluded S-04 — it would collide with S-05 on the Forge Scene generation route/types). Created two git worktrees off clean `main` (`2e22d8a`): `change/browse-projects-and-scenes` and `change/edit-note-after-generation`. No Claude session or skill command has been run in either worktree yet. `main` is clean and up to date with `origin/main`; this session's own changes to this file are not yet pushed.
 
 <!-- Update this file at the end of each session: bump the date/commit above, note what changed, and adjust "Next Recommended Step" if it moved. -->
