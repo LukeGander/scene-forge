@@ -3,7 +3,7 @@ project: "Point&Click Scene Forge"
 version: 1
 status: draft
 created: 2026-08-01
-updated: 2026-08-27
+updated: 2026-08-30
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -33,7 +33,7 @@ Solo point-and-click game creators keep scene ideas in scattered, generic notes 
 | S-03 | enforce-scene-readiness | set a scene's status, add notes, and acknowledge design risks — with "Ready" blocked unless the completeness rule is met | S-01 | FR-018, FR-019, FR-020, FR-022 | in-progress |
 | S-02 | browse-projects-and-scenes | view their project list and browse a project's scenes with current status | S-01 | FR-005, FR-006, FR-013 | proposed |
 | S-04 | add-characters-to-scenes | add and edit characters so Forge Scene can use them as context | S-01 | FR-009, FR-010 | proposed |
-| S-05 | edit-note-after-generation | edit a saved scene note and see the card marked stale if it no longer matches | S-01 | FR-021 | proposed |
+| S-05 | edit-note-after-generation | edit a saved scene note and see the card marked stale if it no longer matches | S-01 | FR-021 | in-progress |
 
 ## Streams
 
@@ -121,7 +121,7 @@ None. The only candidate — an LLM client adapter with a deterministic mock/no-
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Without this, correcting a note after a poor first generation forces a full scene delete/recreate — a rough edge, not a blocker to the north star. Sequenced last among the parallel slices since it's the narrowest in scope and the least urgent relative to the time pressure on this project.
-- **Status:** proposed
+- **Status:** in-progress
 
 ## Backlog Handoff
 
@@ -131,7 +131,7 @@ None. The only candidate — an LLM client adapter with a deterministic mock/no-
 | S-03 | enforce-scene-readiness | Enforce scene "Ready" status against the completeness rule | no | Blocked on S-01 |
 | S-02 | browse-projects-and-scenes | Browse projects and their scenes with status | no | Blocked on S-01 |
 | S-04 | add-characters-to-scenes | Add characters as Forge Scene context | no | Blocked on S-01 |
-| S-05 | edit-note-after-generation | Edit scene note post-generation with stale-card marking | no | Blocked on S-01 |
+| S-05 | edit-note-after-generation | Edit scene note post-generation with stale-card marking | no | Implemented + impl-reviewed (APPROVED); in-progress until archived |
 
 This table is the clean handoff to Jira/Linear or any MCP-backed backlog. Include one row for every `F-NN` and `S-NN`. It should be compact enough to copy into issues, but it must not duplicate the detailed roadmap body.
 
