@@ -225,13 +225,13 @@ No schema migration required — staleness is derived from two pre-existing colu
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm run test`
-- [x] 2.2 Type checking passes: `npm run astro check`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm run test` — a635648
+- [x] 2.2 Type checking passes: `npm run astro check` — a635648
+- [x] 2.3 Linting passes: `npm run lint` — a635648
 
 #### Manual
 
-- [x] 2.4 Editing and saving the note on a scene with a card immediately shows a stale banner and disables Ready, live (no reload)
-- [x] 2.5 Direct `PATCH .../card` with `status: "ready"` while stale is rejected with 400 and the note-changed reason
-- [x] 2.6 Reloading after a note edit (no regenerate) still shows the card as stale
-- [x] 2.7 Regenerating a stale card clears staleness and re-enables Ready (subject to the completeness rule)
+- [x] 2.4 Editing and saving the note on a scene with a card immediately shows a stale banner and disables Ready, live (no reload) — a635648
+- [x] 2.5 Direct `PATCH .../card` with `status: "ready"` while stale is rejected with 400 and the note-changed reason — a635648
+- [x] 2.6 Reloading after a note edit (no regenerate) still shows the card as stale — a635648
+- [x] 2.7 Regenerating a stale card clears staleness and re-enables Ready (subject to the completeness rule) — a635648
