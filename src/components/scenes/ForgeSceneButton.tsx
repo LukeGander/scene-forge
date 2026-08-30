@@ -11,12 +11,13 @@ interface Props {
   sceneId: string;
   initialRecord?: SceneCardRecord | null;
   initialSource?: GenerationSource | null;
+  initialIsStale?: boolean;
 }
 
 type State =
   | { phase: "idle" }
   | { phase: "loading"; elapsedSeconds: number }
-  | { phase: "success"; record: SceneCardRecord; source: GenerationSource; version: number }
+  | { phase: "success"; record: SceneCardRecord; source: GenerationSource; version: number; isStale: boolean }
   | { phase: "error"; message: string };
 
 interface ForgeResponseBody {
@@ -25,10 +26,10 @@ interface ForgeResponseBody {
   error?: string;
 }
 
-export default function ForgeSceneButton({ sceneId, initialRecord, initialSource }: Props) {
+export default function ForgeSceneButton({ sceneId, initialRecord, initialSource, initialIsStale }: Props) {
   const [state, setState] = useState<State>(
     initialRecord && initialSource
-      ? { phase: "success", record: initialRecord, source: initialSource, version: 0 }
+      ? { phase: "success", record: initialRecord, source: initialSource, version: 0, isStale: initialIsStale ?? false }
       : { phase: "idle" },
   );
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -36,6 +37,16 @@ export default function ForgeSceneButton({ sceneId, initialRecord, initialSource
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleNoteUpdated() {
+      setState((prev) => (prev.phase === "success" ? { ...prev, isStale: true } : prev));
+    }
+    window.addEventListener("sceneforge:note-updated", handleNoteUpdated);
+    return () => {
+      window.removeEventListener("sceneforge:note-updated", handleNoteUpdated);
     };
   }, []);
 
@@ -66,6 +77,7 @@ export default function ForgeSceneButton({ sceneId, initialRecord, initialSource
         record: { ...body.card, status: "draft", notes: previousNotes },
         source: body.source,
         version: nextVersion,
+        isStale: false,
       });
     } catch {
       setState({ phase: "error", message: "Network error — could not reach the server" });
@@ -83,8 +95,15 @@ export default function ForgeSceneButton({ sceneId, initialRecord, initialSource
           sceneId={sceneId}
           record={state.record}
           source={state.source}
+          isStale={state.isStale}
           onSaved={(record) => {
-            setState({ phase: "success", record, source: state.source, version: state.version + 1 });
+            setState({
+              phase: "success",
+              record,
+              source: state.source,
+              version: state.version + 1,
+              isStale: state.isStale,
+            });
           }}
         />
         <Button onClick={forge} variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/20">

@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { isReadyEligible } from "@/lib/forge-scene/readiness";
+import { isCardStale } from "@/lib/forge-scene/staleness";
 import type { DesignRisk, SceneCardFields, SceneCardRecord, SceneStatus } from "@/lib/forge-scene/types";
 
 interface SceneCardRow {
@@ -11,6 +12,7 @@ interface SceneCardRow {
   required_assets: string[];
   status: SceneStatus;
   creator_notes: string;
+  generated_at: string;
 }
 
 const VALID_STATUSES: SceneStatus[] = ["draft", "needs_work", "ready"];
@@ -77,7 +79,9 @@ export const PATCH: APIRoute = async (context) => {
 
   const { data: card, error: cardError } = await supabase
     .from("scene_cards")
-    .select("player_goal, obstacle, characters, interactive_element, required_assets, status, creator_notes")
+    .select(
+      "player_goal, obstacle, characters, interactive_element, required_assets, status, creator_notes, generated_at",
+    )
     .eq("scene_id", id)
     .eq("user_id", user.id)
     .single<SceneCardRow>();
@@ -100,8 +104,25 @@ export const PATCH: APIRoute = async (context) => {
       designRisks: body.designRisks,
     });
 
-    if (!eligible) {
-      return jsonResponse({ error: "Scene is not ready", missing: missingReasons }, 400);
+    const { data: scene, error: sceneError } = await supabase
+      .from("scenes")
+      .select("updated_at")
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .single<{ updated_at: string }>();
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (sceneError || !scene) {
+      return jsonResponse({ error: "Not found" }, 404);
+    }
+
+    const stale = isCardStale(scene.updated_at, card.generated_at);
+    const allMissingReasons = stale
+      ? [...missingReasons, "Scene note has changed since this card was generated"]
+      : missingReasons;
+
+    if (!eligible || stale) {
+      return jsonResponse({ error: "Scene is not ready", missing: allMissingReasons }, 400);
     }
   }
 

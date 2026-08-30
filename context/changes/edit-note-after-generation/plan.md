@@ -212,26 +212,26 @@ No schema migration required — staleness is derived from two pre-existing colu
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run astro check`
-- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npm run astro check` — e3a80c6
+- [x] 1.2 Linting passes: `npm run lint` — e3a80c6
 
 #### Manual
 
-- [x] 1.3 Note can be edited and saved on a scene with no card yet; persists across reload
-- [x] 1.4 Editing and saving the note on a scene with an existing card doesn't error or disturb the card
-- [x] 1.5 Empty/whitespace-only note is rejected with a visible error; prior note preserved
+- [x] 1.3 Note can be edited and saved on a scene with no card yet; persists across reload — e3a80c6
+- [x] 1.4 Editing and saving the note on a scene with an existing card doesn't error or disturb the card — e3a80c6
+- [x] 1.5 Empty/whitespace-only note is rejected with a visible error; prior note preserved — e3a80c6
 
 ### Phase 2: Stale Detection, Ready-Gate Enforcement, and Live Sync
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm run test`
-- [ ] 2.2 Type checking passes: `npm run astro check`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm run test`
+- [x] 2.2 Type checking passes: `npm run astro check`
+- [x] 2.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Editing and saving the note on a scene with a card immediately shows a stale banner and disables Ready, live (no reload)
-- [ ] 2.5 Direct `PATCH .../card` with `status: "ready"` while stale is rejected with 400 and the note-changed reason
-- [ ] 2.6 Reloading after a note edit (no regenerate) still shows the card as stale
-- [ ] 2.7 Regenerating a stale card clears staleness and re-enables Ready (subject to the completeness rule)
+- [x] 2.4 Editing and saving the note on a scene with a card immediately shows a stale banner and disables Ready, live (no reload)
+- [x] 2.5 Direct `PATCH .../card` with `status: "ready"` while stale is rejected with 400 and the note-changed reason
+- [x] 2.6 Reloading after a note edit (no regenerate) still shows the card as stale
+- [x] 2.7 Regenerating a stale card clears staleness and re-enables Ready (subject to the completeness rule)
