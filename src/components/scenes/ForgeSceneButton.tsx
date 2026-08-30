@@ -41,14 +41,15 @@ export default function ForgeSceneButton({ sceneId, initialRecord, initialSource
   }, []);
 
   useEffect(() => {
-    function handleNoteUpdated() {
+    function handleNoteUpdated(event: Event) {
+      if ((event as CustomEvent<{ sceneId: string }>).detail.sceneId !== sceneId) return;
       setState((prev) => (prev.phase === "success" ? { ...prev, isStale: true } : prev));
     }
     window.addEventListener("sceneforge:note-updated", handleNoteUpdated);
     return () => {
       window.removeEventListener("sceneforge:note-updated", handleNoteUpdated);
     };
-  }, []);
+  }, [sceneId]);
 
   async function forge() {
     const previousNotes = state.phase === "success" ? state.record.notes : "";

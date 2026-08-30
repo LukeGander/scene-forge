@@ -40,7 +40,7 @@ export default function NoteEditor({ sceneId, initialNote }: Props) {
       }
 
       setNote(body.note);
-      window.dispatchEvent(new CustomEvent("sceneforge:note-updated"));
+      window.dispatchEvent(new CustomEvent("sceneforge:note-updated", { detail: { sceneId } }));
     } catch {
       setError("Network error — could not reach the server");
     } finally {

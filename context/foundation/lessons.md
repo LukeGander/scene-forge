@@ -29,3 +29,10 @@
 - **Problem**: A machine with git `core.autocrlf=true` checks out the repo's LF-stored blobs as CRLF locally; prettier then flags every line. Confirmed pre-existing by stashing the phase's changes and re-running lint with an identical error count — the new file added in this phase (`card.ts`) had zero lint errors on its own.
 - **Rule**: If `npm run lint` fails on a huge number of unrelated files with only `Delete ␍` errors, suspect `core.autocrlf` before assuming the current change broke linting. Verify by lint-checking only the new/changed files directly (e.g. `npx eslint <path>`) and by stashing to compare against the pre-change baseline. Don't "fix" it by touching hundreds of unrelated files inside an unrelated phase — that's a separate repo-hygiene task (e.g. `.gitattributes` `text=auto` + a dedicated normalization commit), not something to bundle into a feature phase.
 - **Applies to**: implement, impl-review
+
+## Staleness is derived, not stored — don't trust scene_cards.status alone
+
+- **Context**: src/pages/api/scenes/[id]/card.ts:97-127 / src/lib/forge-scene/staleness.ts (edit-note-after-generation, S-05).
+- **Problem**: Staleness (scene note changed after card generation) is computed on read, not stored. A card already set "ready" keeps that DB value untouched if the note is edited afterward — only a page that re-runs isCardStale(scene.updated_at, card.generated_at) will notice. A future feature reading scene_cards.status directly (a list view, a dashboard, an export) would report a stale card as "Ready".
+- **Rule**: Any feature that reads scene_cards.status must re-run isCardStale() rather than trusting the stored value.
+- **Applies to**: plan, implement, impl-review
