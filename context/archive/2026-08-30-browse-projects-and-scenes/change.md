@@ -1,10 +1,10 @@
 ---
 change_id: browse-projects-and-scenes
 title: Browse projects and their scenes with status
-status: impl_reviewed
+status: archived
 created: 2026-08-30
 updated: 2026-08-30
-archived_at: null
+archived_at: 2026-08-30T19:41:21Z
 ---
 
 ## Notes

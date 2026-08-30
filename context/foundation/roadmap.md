@@ -31,7 +31,7 @@ Solo point-and-click game creators keep scene ideas in scattered, generic notes 
 | --- | --- | --- | --- | --- | --- |
 | S-01 | first-forged-scene-card | create a minimal project, add a scene note, run Forge Scene, and see a structured scene card | — | US-01, FR-004, FR-012, FR-014, FR-016, FR-017 | ready |
 | S-03 | enforce-scene-readiness | set a scene's status, add notes, and acknowledge design risks — with "Ready" blocked unless the completeness rule is met | S-01 | FR-018, FR-019, FR-020, FR-022 | in-progress |
-| S-02 | browse-projects-and-scenes | view their project list and browse a project's scenes with current status | S-01 | FR-005, FR-006, FR-013 | in-progress |
+| S-02 | browse-projects-and-scenes | view their project list and browse a project's scenes with current status | S-01 | FR-005, FR-006, FR-013 | done |
 | S-04 | add-characters-to-scenes | add and edit characters so Forge Scene can use them as context | S-01 | FR-009, FR-010 | proposed |
 | S-05 | edit-note-after-generation | edit a saved scene note and see the card marked stale if it no longer matches | S-01 | FR-021 | proposed |
 
@@ -97,7 +97,7 @@ None. The only candidate — an LLM client adapter with a deterministic mock/no-
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Low technical risk, but without it a creator with more than one project or scene has no way back in after the first session — needed for any real (non-single-demo) use, and ties directly to the PRD's secondary success criterion on managing multiple scenes without friction.
-- **Status:** in-progress (both phases implemented, impl-review verdict: APPROVED — 2026-08-30; pending `/10x-archive`)
+- **Status:** done
 
 ### S-04: Creator adds characters to enrich scene generation
 
@@ -153,4 +153,4 @@ None. The PRD reports zero open questions ("All gaps resolved during shaping and
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
+- **S-02: creator can view their list of projects, open a project, and see all its scenes with current status** — Archived 2026-08-30 → `context/archive/2026-08-30-browse-projects-and-scenes/`. Lesson: —.
