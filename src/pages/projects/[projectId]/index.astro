@@ -1,0 +1,147 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import { createClient } from "@/lib/supabase";
+import type { SceneStatus } from "@/lib/forge-scene/types";
+
+const { projectId } = Astro.params;
+const { user } = Astro.locals;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (!supabase || !user) {
+  return Astro.redirect("/auth/signin");
+}
+
+if (!projectId) {
+  return new Response("Not found", { status: 404 });
+}
+
+interface ProjectRow {
+  id: string;
+  title: string;
+  premise: string;
+  tone: string;
+}
+
+const { data: project, error: projectError } = await supabase
+  .from("projects")
+  .select("id, title, premise, tone")
+  .eq("id", projectId)
+  .eq("user_id", user.id)
+  .single<ProjectRow>();
+
+// no-unnecessary-condition misreads Supabase's conditional response-union type here;
+// `project`/`projectError` are genuinely nullable at runtime (verified via `astro check`).
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (projectError || !project) {
+  return new Response("Not found", { status: 404 });
+}
+
+interface SceneRow {
+  id: string;
+  title: string;
+  updated_at: string;
+}
+
+const { data: scenes, error: scenesError } = await supabase
+  .from("scenes")
+  .select("id, title, updated_at")
+  .eq("project_id", project.id)
+  .eq("user_id", user.id)
+  .order("updated_at", { ascending: false })
+  .overrideTypes<SceneRow[], { merge: false }>();
+
+// no-unnecessary-condition misreads Supabase's conditional response-union type here;
+// `scenes`/`scenesError` are genuinely nullable at runtime (verified via `astro check`).
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+const sceneList = scenesError || !scenes ? [] : scenes;
+
+const statusBySceneId = new Map<string, SceneStatus>();
+if (sceneList.length > 0) {
+  interface SceneCardStatusRow {
+    scene_id: string;
+    status: SceneStatus;
+  }
+
+  const { data: cards } = await supabase
+    .from("scene_cards")
+    .select("scene_id, status")
+    .eq("user_id", user.id)
+    .in(
+      "scene_id",
+      sceneList.map((scene) => scene.id),
+    )
+    .overrideTypes<SceneCardStatusRow[], { merge: false }>();
+
+  for (const card of cards ?? []) {
+    statusBySceneId.set(card.scene_id, card.status);
+  }
+}
+
+const STATUS_LABELS: Record<SceneStatus, string> = {
+  draft: "Draft",
+  needs_work: "Needs Work",
+  ready: "Ready",
+};
+---
+
+<Layout title={project.title}>
+  <div class="bg-cosmic min-h-screen p-4">
+    <Topbar />
+    <div class="mx-auto max-w-2xl space-y-4 pt-8">
+      <a href="/dashboard" class="text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline">
+        ← Projects
+      </a>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          {project.title}
+        </h1>
+        <p class="mt-2 text-blue-100/80">{project.premise}</p>
+        <p class="mt-1 text-sm text-blue-100/50">Tone: {project.tone}</p>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-white">Scenes</h2>
+        <a
+          href={`/projects/${project.id}/scenes/new`}
+          class="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
+        >
+          New Scene
+        </a>
+      </div>
+
+      {
+        sceneList.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
+            <p class="text-blue-100/80">No scenes yet.</p>
+            <p class="mt-2 text-sm text-blue-100/50">Add your first scene note to get started.</p>
+          </div>
+        ) : (
+          <ul class="space-y-3">
+            {sceneList.map((scene) => {
+              const status = statusBySceneId.get(scene.id);
+              const label = status ? STATUS_LABELS[status] : "Not forged yet";
+              const badgeClass = status ? "bg-purple-500/20 text-purple-200" : "bg-white/10 text-blue-100/40 italic";
+              return (
+                <li>
+                  <a
+                    href={`/scenes/${scene.id}`}
+                    class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
+                  >
+                    <span class="font-medium">{scene.title}</span>
+                    <span
+                      class:list={["rounded-full px-3 py-1 text-xs font-medium tracking-wide uppercase", badgeClass]}
+                    >
+                      {label}
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</Layout>
