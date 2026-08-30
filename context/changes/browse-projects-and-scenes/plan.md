@@ -172,12 +172,12 @@ None — no schema changes.
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — 0863ea6
+- [x] 2.2 Build succeeds: `npm run build` — 0863ea6
 
 #### Manual
 
-- [x] 2.3 Opening a project with a mix of forged (Draft/Needs Work/Ready) and never-forged scenes shows the correct distinct badge for each, most-recently-updated first.
-- [x] 2.4 A project with zero scenes shows the empty-state message and a working "New Scene" link.
-- [x] 2.5 Visiting `/projects/[projectId]` for a project ID that doesn't exist, or belongs to another user, returns a 404 rather than leaking data.
-- [x] 2.6 The back-link returns to the project list; the project list's links open the correct project.
+- [x] 2.3 Opening a project with a mix of forged (Draft/Needs Work/Ready) and never-forged scenes shows the correct distinct badge for each, most-recently-updated first. — 0863ea6
+- [x] 2.4 A project with zero scenes shows the empty-state message and a working "New Scene" link. — 0863ea6
+- [x] 2.5 Visiting `/projects/[projectId]` for a project ID that doesn't exist, or belongs to another user, returns a 404 rather than leaking data. — 0863ea6
+- [x] 2.6 The back-link returns to the project list; the project list's links open the correct project. — 0863ea6
