@@ -158,15 +158,15 @@ None — no schema changes.
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Build succeeds: `npm run build`
+- [x] 1.1 Linting passes: `npm run lint` — 0e8f308
+- [x] 1.2 Build succeeds: `npm run build` — 0e8f308
 
 #### Manual
 
-- [x] 1.3 Signed-in creator with 2+ projects sees all of them on `/dashboard`, ordered by most recently created/updated, each link opening the right project.
-- [x] 1.4 Signed-in creator with zero projects sees the empty-state message and a working "New Project" link.
-- [x] 1.5 A second test account never sees the first account's projects.
-- [x] 1.6 Topbar shows "Projects" (not "Dashboard") and still links to `/dashboard` from every page.
+- [x] 1.3 Signed-in creator with 2+ projects sees all of them on `/dashboard`, ordered by most recently created/updated, each link opening the right project. — 0e8f308
+- [x] 1.4 Signed-in creator with zero projects sees the empty-state message and a working "New Project" link. — 0e8f308
+- [x] 1.5 A second test account never sees the first account's projects. — 0e8f308
+- [x] 1.6 Topbar shows "Projects" (not "Dashboard") and still links to `/dashboard` from every page. — 0e8f308
 
 ### Phase 2: Project Detail & Scene List
 
