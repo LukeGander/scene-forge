@@ -1,10 +1,10 @@
 ---
 change_id: edit-note-after-generation
 title: Edit scene note after generation with stale-card marking
-status: impl_reviewed
+status: archived
 created: 2026-08-30
 updated: 2026-08-30
-archived_at: null
+archived_at: 2026-08-30T19:43:14Z
 ---
 
 ## Notes
