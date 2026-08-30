@@ -12,6 +12,9 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ["@anthropic-ai/sdk"],
+    },
   },
   adapter: cloudflare(),
   env: {
