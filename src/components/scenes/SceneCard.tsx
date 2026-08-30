@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { CircleAlert } from "lucide-react";
 import { NOT_ENOUGH_CONTEXT } from "@/lib/forge-scene/mock";
 import { isReadyEligible } from "@/lib/forge-scene/readiness";
 import { ServerError } from "@/components/auth/ServerError";
@@ -7,10 +8,13 @@ import type { SceneCardRecord, SceneStatus } from "@/lib/forge-scene/types";
 
 type GenerationSource = "mock" | "anthropic";
 
+const STALE_REASON = "Scene note has changed since this card was generated";
+
 interface Props {
   sceneId: string;
   record: SceneCardRecord;
   source: GenerationSource;
+  isStale: boolean;
   onSaved: (record: SceneCardRecord) => void;
 }
 
@@ -52,7 +56,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export function SceneCard({ sceneId, record, source, onSaved }: Props) {
+export function SceneCard({ sceneId, record, source, isStale, onSaved }: Props) {
   const [draft, setDraft] = useState<SceneCardRecord>(record);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,17 +99,24 @@ export function SceneCard({ sceneId, record, source, onSaved }: Props) {
 
   return (
     <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6">
+      {isStale && (
+        <p className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-900/20 px-3 py-2 text-sm text-amber-200">
+          <CircleAlert className="size-4 shrink-0" />
+          This card may be out of date — the scene note has changed since it was generated. Regenerate to refresh it.
+        </p>
+      )}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           {STATUS_OPTIONS.map((option) => {
-            const disabled = option.value === "ready" && !eligible;
+            const readyBlockedReasons = isStale ? [...missingReasons, STALE_REASON] : missingReasons;
+            const disabled = option.value === "ready" && (!eligible || isStale);
             const active = draft.status === option.value;
             return (
               <button
                 key={option.value}
                 type="button"
                 disabled={disabled}
-                title={disabled ? `Not ready: ${missingReasons.join(", ")}` : undefined}
+                title={disabled ? `Not ready: ${readyBlockedReasons.join(", ")}` : undefined}
                 onClick={() => {
                   setDraft((prev) => ({ ...prev, status: option.value }));
                 }}

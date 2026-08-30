@@ -2,7 +2,9 @@
 import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
 import ForgeSceneButton from "@/components/scenes/ForgeSceneButton";
+import NoteEditor from "@/components/scenes/NoteEditor";
 import { createClient } from "@/lib/supabase";
+import { isCardStale } from "@/lib/forge-scene/staleness";
 import type { SceneCardRecord, DesignRisk } from "@/lib/forge-scene/types";
 
 const { id } = Astro.params;
@@ -19,10 +21,10 @@ if (!id) {
 
 const { data: scene, error } = await supabase
   .from("scenes")
-  .select("id, title, note")
+  .select("id, title, note, updated_at")
   .eq("id", id)
   .eq("user_id", user.id)
-  .single<{ id: string; title: string; note: string }>();
+  .single<{ id: string; title: string; note: string; updated_at: string }>();
 
 // no-unnecessary-condition misreads Supabase's conditional response-union type here;
 // `scene`/`error` are genuinely nullable at runtime (verified via `astro check`).
@@ -41,12 +43,13 @@ interface SceneCardRow {
   status: SceneCardRecord["status"];
   creator_notes: string;
   generation_source: "mock" | "anthropic";
+  generated_at: string;
 }
 
 const { data: sceneCard } = await supabase
   .from("scene_cards")
   .select(
-    "player_goal, obstacle, characters, interactive_element, required_assets, design_risks, status, creator_notes, generation_source",
+    "player_goal, obstacle, characters, interactive_element, required_assets, design_risks, status, creator_notes, generation_source, generated_at",
   )
   .eq("scene_id", scene.id)
   .eq("user_id", user.id)
@@ -65,6 +68,7 @@ const initialRecord: SceneCardRecord | null = sceneCard
     }
   : null;
 const initialSource = sceneCard?.generation_source ?? null;
+const initialIsStale = sceneCard ? isCardStale(scene.updated_at, sceneCard.generated_at) : false;
 ---
 
 <Layout title={scene.title}>
@@ -76,8 +80,14 @@ const initialSource = sceneCard?.generation_source ?? null;
       <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
         {scene.title}
       </h1>
-      <p class="whitespace-pre-wrap text-blue-100/80">{scene.note}</p>
-      <ForgeSceneButton sceneId={scene.id} initialRecord={initialRecord} initialSource={initialSource} client:load />
+      <NoteEditor sceneId={scene.id} initialNote={scene.note} client:load />
+      <ForgeSceneButton
+        sceneId={scene.id}
+        initialRecord={initialRecord}
+        initialSource={initialSource}
+        initialIsStale={initialIsStale}
+        client:load
+      />
     </div>
   </div>
 </Layout>
