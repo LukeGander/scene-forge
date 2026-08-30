@@ -33,7 +33,7 @@ Solo point-and-click game creators keep scene ideas in scattered, generic notes 
 | S-03 | enforce-scene-readiness | set a scene's status, add notes, and acknowledge design risks — with "Ready" blocked unless the completeness rule is met | S-01 | FR-018, FR-019, FR-020, FR-022 | in-progress |
 | S-02 | browse-projects-and-scenes | view their project list and browse a project's scenes with current status | S-01 | FR-005, FR-006, FR-013 | done |
 | S-04 | add-characters-to-scenes | add and edit characters so Forge Scene can use them as context | S-01 | FR-009, FR-010 | proposed |
-| S-05 | edit-note-after-generation | edit a saved scene note and see the card marked stale if it no longer matches | S-01 | FR-021 | in-progress |
+| S-05 | edit-note-after-generation | edit a saved scene note and see the card marked stale if it no longer matches | S-01 | FR-021 | done |
 
 ## Streams
 
@@ -121,7 +121,7 @@ None. The only candidate — an LLM client adapter with a deterministic mock/no-
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Without this, correcting a note after a poor first generation forces a full scene delete/recreate — a rough edge, not a blocker to the north star. Sequenced last among the parallel slices since it's the narrowest in scope and the least urgent relative to the time pressure on this project.
-- **Status:** in-progress
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -154,3 +154,4 @@ None. The PRD reports zero open questions ("All gaps resolved during shaping and
 ## Done
 
 - **S-02: creator can view their list of projects, open a project, and see all its scenes with current status** — Archived 2026-08-30 → `context/archive/2026-08-30-browse-projects-and-scenes/`. Lesson: —.
+- **S-05: creator can edit a saved scene note before or after Forge Scene has run; if the note changes after a card already exists, the existing card is marked stale and the creator is prompted to re-run Forge Scene.** — Archived 2026-08-30 → `context/archive/2026-08-30-edit-note-after-generation/`. Lesson: —.
