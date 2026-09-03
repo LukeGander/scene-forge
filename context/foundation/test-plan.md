@@ -69,7 +69,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | API ownership & authorization coverage | Prove no API route lets one creator touch another's data | #1 | integration (two-user route tests) | not started | — |
+| 1 | API ownership & authorization coverage | Prove no API route lets one creator touch another's data | #1 | integration (two-user route tests) | complete | `context/archive/2026-09-03-testing-api-ownership-authorization/` |
 | 2 | Forge Scene contract & staleness integrity | Prove generated cards never silently omit fields, and stale notes are visibly flagged | #2, #3 | unit/contract + component | not started | — |
 | 3 | Readiness-gate & state-reconciliation coverage | Prove the Ready-gate re-validates server-side, and client state matches server state after Save/Regenerate | #4, #5 | integration + component | not started | — |
 | 4 | Quality-gates wiring | Wire `npm run test` into CI as a blocking gate, formalizing the floor Phases 1–3 built | #6 | gates | not started | — |
