@@ -258,9 +258,9 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `git diff context/foundation/test-plan.md` touches only §6.1
+- [x] 3.1 `npm run lint` passes — f168e6e
+- [x] 3.2 `git diff context/foundation/test-plan.md` touches only §6.1 — f168e6e
 
 #### Manual
 
-- [x] 3.3 §6.1 read back and confirmed sufficient for a future contributor
+- [x] 3.3 §6.1 read back and confirmed sufficient for a future contributor — f168e6e
