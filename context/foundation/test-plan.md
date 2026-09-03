@@ -124,7 +124,54 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.1 Adding an integration test for an API route (ownership)
 
-- TBD — see §3 Phase 1.
+Tests hit a running local dev server + local Supabase over real HTTP — they
+do not import route handlers directly (`astro:env/server` isn't resolvable
+under plain Vitest).
+
+- **Preconditions**: `supabase start`, then `npm run dev`. If the route
+  under test can call Anthropic (currently only `forge.ts`), force the
+  mock path instead of a real, billed API call: create a local
+  `.env.test` file (gitignored via the repo's existing `.env.*` rule,
+  same as `.env` itself — never committed) containing one line,
+  `ANTHROPIC_API_KEY=`, then start the server with
+  `npm run dev -- --mode test` instead of a plain `npm run dev`. Vite's
+  mode-specific env loading (`.env.<mode>` overrides `.env` for matching
+  keys, confirmed via `loadEnv()` in `node_modules/vite/dist/node/chunks/config.js`)
+  resolves the key to an empty string this way regardless of shell —
+  verified end-to-end on this repo in both PowerShell and Git Bash. Do
+  **not** use a shell-level override (`VAR=`/`$env:VAR=""`) instead: it
+  is not portable — PowerShell and cmd.exe treat assigning an empty
+  string as deleting the variable, so a child process sees it as absent
+  rather than empty, and Astro then silently falls back to `.env`'s real
+  key (confirmed by reproducing this exact failure during Phase 1 of
+  this rollout phase's own implementation). Never edit `.env` itself.
+  After any dev-server restart, confirm via `netstat`/
+  `curl http://localhost:4321` that exactly one process is listening on
+  the expected port — Astro silently auto-increments the port if a stale
+  process is still bound, which can leave a new, correctly-configured
+  server unreachable while an old, wrongly-configured one keeps answering.
+- **Fixture**: `src/lib/test-support/auth-fixture.ts` — `createTestUser(label)`
+  signs up + signs in a uniquely-emailed user against the running dev
+  server and returns `{ email, cookie }`; `apiFetch(cookie, path, init)`
+  wraps `fetch()` against the dev server, attaching the cookie (or none,
+  for an unauthenticated-request case) and leaving redirects unfollowed.
+  `apiFetch` also sets an `Origin` header matching the dev server's own
+  origin on every request — Astro's built-in CSRF `Origin` check
+  (`security.checkOrigin`, on by default) otherwise 403s any POST/PATCH
+  that arrives without one, which a plain Node `fetch()` never sends.
+- **Naming/location**: one spec file per route, colocated with the route
+  file (`<route>.test.ts` next to `<route>.ts` — matches
+  `readiness.test.ts`/`staleness.test.ts`'s existing convention).
+- **Reference test**: `src/pages/api/scenes/[id]/note.test.ts` — the
+  simplest of the 5 Phase 1 specs (one PATCH route, JSON body, no
+  cross-route setup dependency). Copy its shape: an unauthenticated case
+  asserting the route's actual guard response (401 JSON or a redirect —
+  check the route's source, don't assume), a cross-user case asserting
+  404 with no leaked data (skip this case only if the route has no
+  existing-resource ownership dimension, like `projects/create.ts`), and
+  a same-owner positive control.
+- **Run**: `npm run test` (all specs) or `npm run test -- <route-name>`
+  (one file) — both require the preconditions above already running.
 
 ### 6.2 Adding a unit/contract test (Forge Scene output contract)
 

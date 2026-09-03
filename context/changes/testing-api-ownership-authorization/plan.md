@@ -48,7 +48,7 @@ Three phases: (1) a shared auth-fixture helper that creates two independent auth
 
 Tests require `supabase start` and `npm run dev` (default `http://localhost:4321`) already running before `npm run test` — there is no automated orchestration of either process from within the test run; document this as a precondition rather than scripting it. **Every request needs an `Origin: <TEST_BASE_URL>` header** — discovered during Phase 1 implementation: Astro's built-in CSRF protection (`security.checkOrigin`, on by default for `output: "server"`) rejects any non-GET request that arrives with no `Origin` header at all (a plain Node `fetch()` sends none), returning `403 "Cross-site POST form submissions are forbidden"` before the route handler ever runs. This affects every mutating route, not just the form-encoded ones — `apiFetch`/`createTestUser` set it on every call. To get a session cookie for a test user: `POST /api/auth/signup` (form-encoded `email`/`password`) then `POST /api/auth/signin` (same credentials) with `fetch(..., { redirect: "manual" })` on both calls, reading `response.headers.getSetCookie()` off the **signin** response (not signup — signup's redirect target is a stale "confirm your email" page even though local auto-confirm means a session may already exist; signin is the reliable, idempotent source of a fresh session). Join the returned `Set-Cookie` values into a single `Cookie` header (`name=value` pairs only, drop attributes) for use on subsequent requests. `card.ts`'s tests depend on `forge.ts` having already created the `scene_cards` row for that scene — call `forge.ts`'s POST as part of `card.test.ts`'s setup, not as a separate precondition.
 
-**The dev server must be started with `ANTHROPIC_API_KEY` overridden empty** (`ANTHROPIC_API_KEY= npm run dev` — Vite's `loadEnv`, used by `astro:env`, gives an already-set `process.env` value precedence over `.env`, verified via `node_modules/vite/dist/node/chunks/config.js`'s `loadEnv`) — the project's local `.env` has a real key, and without this override `forge.ts`'s tests make real, billed Anthropic API calls instead of exercising the mock path. Do not edit `.env` itself. When restarting the dev server for any reason during this change's implementation, re-apply the override — a plain `npm run dev` silently reverts to the real key. Also watch for **stale dev-server processes**: Astro auto-increments the port (4321 → 4322 → …) if one is already bound, so a leftover process from an earlier run can silently keep serving real-key responses on 4321 while a new, correctly-overridden instance listens on 4322+ unnoticed — always confirm via `netstat`/`curl` that only one process is listening and that it's on the expected port before trusting a restart.
+**The dev server must be started with `ANTHROPIC_API_KEY` forced empty via a `.env.test` file, not a shell-level override** — create a local, gitignored `.env.test` containing `ANTHROPIC_API_KEY=`, then start with `npm run dev -- --mode test`. Vite's mode-specific env loading (`.env.<mode>` overrides `.env` for matching keys) resolves the key to an empty string this way regardless of shell. A shell-level override (`ANTHROPIC_API_KEY= npm run dev` in bash, or `$env:ANTHROPIC_API_KEY = ""` in PowerShell) is NOT portable: PowerShell/cmd.exe treat an empty-string assignment as deleting the variable, so a child process sees it as absent, and Astro silently falls back to `.env`'s real key — this was discovered the hard way mid-implementation when a PowerShell-based override produced a real, billed "invalid API key" call instead of the intended mock path. The project's local `.env` has a real key, and without the `.env.test` override `forge.ts`'s tests make real, billed Anthropic API calls. Do not edit `.env` itself. When restarting the dev server for any reason during this change's implementation, re-apply `--mode test` — a plain `npm run dev` silently reverts to the real key. Also watch for **stale dev-server processes**: Astro auto-increments the port (4321 → 4322 → …) if one is already bound, so a leftover process from an earlier run can silently keep serving real-key responses on 4321 while a new, correctly-configured instance listens on 4322+ unnoticed — always confirm via `netstat`/`curl` that only one process is listening and that it's on the expected port before trusting a restart. This project's own convention already gitignores `.env.*` except `.env.example` (`.gitignore:7-9`), so `.env.test` needs no `.gitignore` change.
 
 ## Phase 1: Test infrastructure
 
@@ -246,21 +246,21 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 2.1 `npm run test` passes, including all 5 new spec files
-- [x] 2.2 `npm run lint` passes on all new files
+- [x] 2.1 `npm run test` passes, including all 5 new spec files — d2862ff
+- [x] 2.2 `npm run lint` passes on all new files — d2862ff
 
 #### Manual
 
-- [x] 2.3 `npm run test` passes with zero flakiness across 2 consecutive runs
-- [x] 2.4 One cross-user case spot-checked manually and matches the automated assertion
+- [x] 2.3 `npm run test` passes with zero flakiness across 2 consecutive runs — d2862ff
+- [x] 2.4 One cross-user case spot-checked manually and matches the automated assertion — d2862ff
 
 ### Phase 3: Cookbook update
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `git diff context/foundation/test-plan.md` touches only §6.1
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `git diff context/foundation/test-plan.md` touches only §6.1
 
 #### Manual
 
-- [ ] 3.3 §6.1 read back and confirmed sufficient for a future contributor
+- [x] 3.3 §6.1 read back and confirmed sufficient for a future contributor
