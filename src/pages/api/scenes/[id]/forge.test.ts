@@ -1,39 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { createTestUser, apiFetch } from "@/lib/test-support/auth-fixture";
+import { createProject, createScene } from "@/lib/test-support/scene-fixtures";
 
-async function createProject(cookie: string, title: string): Promise<string> {
-  const response = await apiFetch(cookie, "/api/projects/create", {
-    method: "POST",
-    body: new URLSearchParams({ title, premise: "A premise.", tone: "Tone" }),
-  });
-  const location = response.headers.get("location") ?? "";
-  const match = /^\/projects\/([^/]+)\/scenes\/new$/.exec(location);
-  if (!match) {
-    throw new Error(`Unexpected projects/create redirect: ${location}`);
-  }
-  return match[1];
-}
-
-async function createScene(cookie: string, projectId: string, note: string): Promise<string> {
-  const response = await apiFetch(cookie, "/api/scenes/create", {
-    method: "POST",
-    body: new URLSearchParams({ projectId, title: "Scene", note }),
-  });
-  const location = response.headers.get("location") ?? "";
-  const match = /^\/scenes\/([^/]+)$/.exec(location);
-  if (!match) {
-    throw new Error(`Unexpected scenes/create redirect: ${location}`);
-  }
-  return match[1];
-}
+// Syntactically valid but non-existent scene id — the route checks auth
+// before touching this param, so no real fixture is needed for this case.
+const NONEXISTENT_SCENE_ID = "00000000-0000-0000-0000-000000000000";
 
 describe("POST /api/scenes/[id]/forge", () => {
   it("rejects unauthenticated requests", async () => {
-    const owner = await createTestUser("forge-unauth");
-    const projectId = await createProject(owner.cookie, "Forge Project");
-    const sceneId = await createScene(owner.cookie, projectId, "A hero must escape. A guard blocks the door.");
-
-    const response = await apiFetch(null, `/api/scenes/${sceneId}/forge`, { method: "POST" });
+    const response = await apiFetch(null, `/api/scenes/${NONEXISTENT_SCENE_ID}/forge`, { method: "POST" });
 
     expect(response.status).toBe(401);
     expect(await response.json()).toEqual({ error: "Not authenticated" });
@@ -61,6 +36,9 @@ describe("POST /api/scenes/[id]/forge", () => {
     expect(response.status).toBe(200);
     const body = (await response.json()) as { card: unknown; source: string };
     expect(body.card).toBeTruthy();
+    // Requires the dev server to be started with the mock Anthropic path forced
+    // (see test-plan.md §6.1's .env.test/--mode test precondition) — otherwise
+    // this assertion fails after making a real, billed Anthropic call.
     expect(body.source).toBe("mock");
   });
 });

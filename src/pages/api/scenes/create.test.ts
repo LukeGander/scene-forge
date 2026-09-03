@@ -1,18 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createTestUser, apiFetch } from "@/lib/test-support/auth-fixture";
-
-async function createProject(cookie: string, title: string): Promise<string> {
-  const response = await apiFetch(cookie, "/api/projects/create", {
-    method: "POST",
-    body: new URLSearchParams({ title, premise: "A premise.", tone: "Tone" }),
-  });
-  const location = response.headers.get("location") ?? "";
-  const match = /^\/projects\/([^/]+)\/scenes\/new$/.exec(location);
-  if (!match) {
-    throw new Error(`Unexpected projects/create redirect: ${location}`);
-  }
-  return match[1];
-}
+import { createProject } from "@/lib/test-support/scene-fixtures";
 
 describe("POST /api/scenes/create", () => {
   it("redirects unauthenticated requests to sign-in without creating a scene", async () => {

@@ -26,12 +26,17 @@ export async function createTestUser(label: string): Promise<TestUser> {
   const form = new URLSearchParams({ email, password: TEST_PASSWORD });
   const headers = { Origin: TEST_BASE_URL };
 
-  await fetch(`${TEST_BASE_URL}/api/auth/signup`, {
+  const signUpResponse = await fetch(`${TEST_BASE_URL}/api/auth/signup`, {
     method: "POST",
     body: form,
     headers,
     redirect: "manual",
   });
+  if (signUpResponse.headers.get("location") !== "/auth/confirm-email") {
+    throw new Error(
+      `Signup failed for ${email}: redirected to ${signUpResponse.headers.get("location") ?? "(no location)"}`,
+    );
+  }
 
   const signInResponse = await fetch(`${TEST_BASE_URL}/api/auth/signin`, {
     method: "POST",
@@ -39,6 +44,11 @@ export async function createTestUser(label: string): Promise<TestUser> {
     headers,
     redirect: "manual",
   });
+  if (signInResponse.headers.get("location") !== "/") {
+    throw new Error(
+      `Signin failed for ${email}: redirected to ${signInResponse.headers.get("location") ?? "(no location)"}`,
+    );
+  }
 
   return { email, cookie: extractCookieHeader(signInResponse) };
 }

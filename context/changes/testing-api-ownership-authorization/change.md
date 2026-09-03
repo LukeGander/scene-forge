@@ -1,7 +1,7 @@
 ---
 change_id: testing-api-ownership-authorization
 title: Testing api ownership authorization
-status: implemented
+status: impl_reviewed
 created: 2026-09-03
 updated: 2026-09-03
 archived_at: null

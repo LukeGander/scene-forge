@@ -1,32 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createTestUser, apiFetch } from "@/lib/test-support/auth-fixture";
 import type { TestUser } from "@/lib/test-support/auth-fixture";
-
-async function createProject(cookie: string, title: string): Promise<string> {
-  const response = await apiFetch(cookie, "/api/projects/create", {
-    method: "POST",
-    body: new URLSearchParams({ title, premise: "A premise.", tone: "Tone" }),
-  });
-  const location = response.headers.get("location") ?? "";
-  const match = /^\/projects\/([^/]+)\/scenes\/new$/.exec(location);
-  if (!match) {
-    throw new Error(`Unexpected projects/create redirect: ${location}`);
-  }
-  return match[1];
-}
-
-async function createScene(cookie: string, projectId: string, note: string): Promise<string> {
-  const response = await apiFetch(cookie, "/api/scenes/create", {
-    method: "POST",
-    body: new URLSearchParams({ projectId, title: "Scene", note }),
-  });
-  const location = response.headers.get("location") ?? "";
-  const match = /^\/scenes\/([^/]+)$/.exec(location);
-  if (!match) {
-    throw new Error(`Unexpected scenes/create redirect: ${location}`);
-  }
-  return match[1];
-}
+import { createProject, createScene } from "@/lib/test-support/scene-fixtures";
 
 async function seedSceneWithCard(label: string): Promise<{ owner: TestUser; sceneId: string }> {
   const owner = await createTestUser(label);
