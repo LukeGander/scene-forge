@@ -48,6 +48,8 @@ Three phases: (1) a shared auth-fixture helper that creates two independent auth
 
 Tests require `supabase start` and `npm run dev` (default `http://localhost:4321`) already running before `npm run test` — there is no automated orchestration of either process from within the test run; document this as a precondition rather than scripting it. **Every request needs an `Origin: <TEST_BASE_URL>` header** — discovered during Phase 1 implementation: Astro's built-in CSRF protection (`security.checkOrigin`, on by default for `output: "server"`) rejects any non-GET request that arrives with no `Origin` header at all (a plain Node `fetch()` sends none), returning `403 "Cross-site POST form submissions are forbidden"` before the route handler ever runs. This affects every mutating route, not just the form-encoded ones — `apiFetch`/`createTestUser` set it on every call. To get a session cookie for a test user: `POST /api/auth/signup` (form-encoded `email`/`password`) then `POST /api/auth/signin` (same credentials) with `fetch(..., { redirect: "manual" })` on both calls, reading `response.headers.getSetCookie()` off the **signin** response (not signup — signup's redirect target is a stale "confirm your email" page even though local auto-confirm means a session may already exist; signin is the reliable, idempotent source of a fresh session). Join the returned `Set-Cookie` values into a single `Cookie` header (`name=value` pairs only, drop attributes) for use on subsequent requests. `card.ts`'s tests depend on `forge.ts` having already created the `scene_cards` row for that scene — call `forge.ts`'s POST as part of `card.test.ts`'s setup, not as a separate precondition.
 
+**The dev server must be started with `ANTHROPIC_API_KEY` overridden empty** (`ANTHROPIC_API_KEY= npm run dev` — Vite's `loadEnv`, used by `astro:env`, gives an already-set `process.env` value precedence over `.env`, verified via `node_modules/vite/dist/node/chunks/config.js`'s `loadEnv`) — the project's local `.env` has a real key, and without this override `forge.ts`'s tests make real, billed Anthropic API calls instead of exercising the mock path. Do not edit `.env` itself. When restarting the dev server for any reason during this change's implementation, re-apply the override — a plain `npm run dev` silently reverts to the real key. Also watch for **stale dev-server processes**: Astro auto-increments the port (4321 → 4322 → …) if one is already bound, so a leftover process from an earlier run can silently keep serving real-key responses on 4321 while a new, correctly-overridden instance listens on 4322+ unnoticed — always confirm via `netstat`/`curl` that only one process is listening and that it's on the expected port before trusting a restart.
+
 ## Phase 1: Test infrastructure
 
 ### Overview
@@ -233,24 +235,24 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes on the two new files
-- [x] 1.2 `npm run test -- auth-fixture` passes
+- [x] 1.1 `npm run lint` passes on the two new files — b4a688e
+- [x] 1.2 `npm run test -- auth-fixture` passes — b4a688e
 
 #### Manual
 
-- [x] 1.3 Two new users visible in local Supabase Studio auth panel after re-running the smoke test
+- [x] 1.3 Two new users visible in local Supabase Studio auth panel after re-running the smoke test — b4a688e
 
 ### Phase 2: Ownership & auth-guard test suites
 
 #### Automated
 
-- [ ] 2.1 `npm run test` passes, including all 5 new spec files
-- [ ] 2.2 `npm run lint` passes on all new files
+- [x] 2.1 `npm run test` passes, including all 5 new spec files
+- [x] 2.2 `npm run lint` passes on all new files
 
 #### Manual
 
-- [ ] 2.3 `npm run test` passes with zero flakiness across 2 consecutive runs
-- [ ] 2.4 One cross-user case spot-checked manually and matches the automated assertion
+- [x] 2.3 `npm run test` passes with zero flakiness across 2 consecutive runs
+- [x] 2.4 One cross-user case spot-checked manually and matches the automated assertion
 
 ### Phase 3: Cookbook update
 
