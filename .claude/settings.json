@@ -26,5 +26,26 @@
     "deny": [
       "Bash(rm -rf *)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/lint-edited-file.ps1"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ]
   }
 }
