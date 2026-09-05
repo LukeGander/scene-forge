@@ -116,6 +116,7 @@ export function SceneCard({ sceneId, record, source, isStale, onSaved }: Props) 
                 key={option.value}
                 type="button"
                 disabled={disabled}
+                aria-pressed={active}
                 title={disabled ? `Not ready: ${readyBlockedReasons.join(", ")}` : undefined}
                 onClick={() => {
                   setDraft((prev) => ({ ...prev, status: option.value }));
