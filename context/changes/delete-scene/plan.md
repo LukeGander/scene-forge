@@ -200,26 +200,26 @@ None — no schema change; relies entirely on the existing `ON DELETE CASCADE` f
 
 #### Automated
 
-- [x] 1.1 Vitest integration test passes (`index.test.ts`)
-- [x] 1.2 ESLint passes on new files
-- [x] 1.3 astro check passes
+- [x] 1.1 Vitest integration test passes (`index.test.ts`) — 08f8aed
+- [x] 1.2 ESLint passes on new files — 08f8aed
+- [x] 1.3 astro check passes — 08f8aed
 
 #### Manual
 
-- [x] 1.4 Owner delete via a direct request → 204, scene + card gone
-- [x] 1.5 Cross-user delete attempt → 404, nothing removed
+- [x] 1.4 Owner delete via a direct request → 204, scene + card gone — 08f8aed
+- [x] 1.5 Cross-user delete attempt → 404, nothing removed — 08f8aed
 
 ### Phase 2: Frontend — confirm-then-delete UI
 
 #### Automated
 
-- [ ] 2.1 ESLint passes on changed/new files
-- [ ] 2.2 astro check passes
-- [ ] 2.3 Phase 1 integration test still passes
+- [x] 2.1 ESLint passes on changed/new files
+- [x] 2.2 astro check passes
+- [x] 2.3 Phase 1 integration test still passes
 
 #### Manual
 
-- [ ] 2.4 Cancel leaves scene untouched
-- [ ] 2.5 Delete scene with a card — redirect + card gone
-- [ ] 2.6 Delete scene without a card — redirect works
-- [ ] 2.7 Simulated failure shows visible error, control still usable
+- [x] 2.4 Cancel leaves scene untouched
+- [x] 2.5 Delete scene with a card — redirect + card gone
+- [x] 2.6 Delete scene without a card — redirect works
+- [x] 2.7 Simulated failure shows visible error, control still usable
