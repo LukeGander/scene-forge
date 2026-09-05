@@ -1,10 +1,10 @@
 ---
 change_id: delete-scene
 title: Delete scene
-status: impl_reviewed
+status: archived
 created: 2026-09-05
 updated: 2026-09-05
-archived_at: null
+archived_at: 2026-09-05T19:41:33Z
 ---
 
 ## Notes
