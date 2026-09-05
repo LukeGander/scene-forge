@@ -20,6 +20,14 @@ dist/
 # Local Claude settings, if created
 .claude/settings.local.json
 
+# Playwright CLI's disposable snapshot artifacts (written to cwd on `open`)
+.playwright-cli/
+
+# Playwright Test
+playwright/.auth/
+test-results/
+playwright-report/
+
 # from 10x-astro-starter
 npm-debug.log*
 yarn-debug.log*
