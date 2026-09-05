@@ -5,7 +5,8 @@ import ForgeSceneButton from "@/components/scenes/ForgeSceneButton";
 import NoteEditor from "@/components/scenes/NoteEditor";
 import { createClient } from "@/lib/supabase";
 import { isCardStale } from "@/lib/forge-scene/staleness";
-import type { SceneCardRecord, DesignRisk } from "@/lib/forge-scene/types";
+import { resolveSceneCardLookup, type SceneCardRow } from "@/lib/forge-scene/card-lookup";
+import type { SceneCardRecord } from "@/lib/forge-scene/types";
 
 const { id } = Astro.params;
 const { user } = Astro.locals;
@@ -33,20 +34,7 @@ if (error || !scene) {
   return new Response("Not found", { status: 404 });
 }
 
-interface SceneCardRow {
-  player_goal: string;
-  obstacle: string;
-  characters: SceneCardRecord["characters"];
-  interactive_element: string;
-  required_assets: string[];
-  design_risks: DesignRisk[];
-  status: SceneCardRecord["status"];
-  creator_notes: string;
-  generation_source: "mock" | "anthropic";
-  generated_at: string;
-}
-
-const { data: sceneCard } = await supabase
+const { data: sceneCardData, error: sceneCardError } = await supabase
   .from("scene_cards")
   .select(
     "player_goal, obstacle, characters, interactive_element, required_assets, design_risks, status, creator_notes, generation_source, generated_at",
@@ -54,6 +42,8 @@ const { data: sceneCard } = await supabase
   .eq("scene_id", scene.id)
   .eq("user_id", user.id)
   .maybeSingle<SceneCardRow>();
+
+const sceneCard = resolveSceneCardLookup(sceneCardData, sceneCardError);
 
 const initialRecord: SceneCardRecord | null = sceneCard
   ? {
