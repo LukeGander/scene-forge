@@ -1,0 +1,6 @@
+# 10x-cli managed course artifacts — hash-checked, must not be reformatted
+CLAUDE.md
+.claude/skills/**
+.claude/prompts/**
+.claude/rules/**
+.claude/.10x-cli-manifest.json
