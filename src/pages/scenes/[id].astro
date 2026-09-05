@@ -3,7 +3,6 @@ import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
 import ForgeSceneButton from "@/components/scenes/ForgeSceneButton";
 import NoteEditor from "@/components/scenes/NoteEditor";
-import DeleteSceneButton from "@/components/scenes/DeleteSceneButton";
 import { createClient } from "@/lib/supabase";
 import { isCardStale } from "@/lib/forge-scene/staleness";
 import { resolveSceneCardLookup, type SceneCardRow } from "@/lib/forge-scene/card-lookup";
@@ -74,12 +73,13 @@ const initialIsStale = sceneCard ? isCardStale(scene.updated_at, sceneCard.gener
       <NoteEditor sceneId={scene.id} initialNote={scene.note} client:load />
       <ForgeSceneButton
         sceneId={scene.id}
+        projectId={scene.project_id}
+        sceneTitle={scene.title}
         initialRecord={initialRecord}
         initialSource={initialSource}
         initialIsStale={initialIsStale}
         client:load
       />
-      <DeleteSceneButton sceneId={scene.id} projectId={scene.project_id} sceneTitle={scene.title} client:load />
     </div>
   </div>
 </Layout>

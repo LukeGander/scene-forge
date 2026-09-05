@@ -38,9 +38,7 @@ export default function DeleteSceneButton({ sceneId, projectId, sceneTitle }: Pr
   }
 
   return (
-    <div className="space-y-3 rounded-2xl border border-red-500/30 bg-red-950/10 p-6">
-      <h2 className="text-sm font-semibold tracking-wide text-red-300 uppercase">Danger Zone</h2>
-
+    <div className="space-y-3">
       {state.phase === "error" && <ServerError message={state.message} />}
 
       {state.phase === "idle" ? (
