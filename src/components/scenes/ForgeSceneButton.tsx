@@ -135,7 +135,7 @@ export default function ForgeSceneButton({
   if (state.phase === "loading") {
     return (
       <div className="space-y-3">
-        <Button disabled className="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white">
+        <Button disabled className="w-full rounded-lg bg-amber-700 px-4 py-2 font-medium text-white">
           <span className="flex items-center gap-2">
             <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
             Forging scene... {state.elapsedSeconds}s
@@ -151,7 +151,7 @@ export default function ForgeSceneButton({
       {state.phase === "error" && <ServerError message={state.message} />}
       <Button
         onClick={forge}
-        className="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
+        className="w-full rounded-lg bg-amber-700 px-4 py-2 font-medium text-white transition-colors hover:bg-amber-600"
       >
         <Sparkles className="size-4" />
         {state.phase === "error" ? "Try again" : "Forge Scene"}

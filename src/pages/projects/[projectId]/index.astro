@@ -89,23 +89,23 @@ const STATUS_LABELS: Record<SceneStatus, string> = {
   <div class="bg-cosmic min-h-screen p-4">
     <Topbar />
     <div class="mx-auto max-w-2xl space-y-4 pt-8">
-      <a href="/dashboard" class="text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline">
+      <a href="/dashboard" class="text-sm text-amber-400 transition-colors hover:text-amber-200 hover:underline">
         ← Projects
       </a>
 
-      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+      <div class="rounded-xl border border-slate-400/20 bg-slate-900/60 p-6 text-white">
+        <h1 class="bg-gradient-to-r from-slate-300 to-amber-300 bg-clip-text text-3xl font-bold text-transparent">
           {project.title}
         </h1>
         <p class="mt-2 text-blue-100/80">{project.premise}</p>
-        <p class="mt-1 text-sm text-blue-100/50">Tone: {project.tone}</p>
+        <p class="mt-1 text-sm text-stone-400/60">Tone: {project.tone}</p>
       </div>
 
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold text-white">Scenes</h2>
         <a
           href={`/projects/${project.id}/scenes/new`}
-          class="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
+          class="rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600"
         >
           New Scene
         </a>
@@ -113,21 +113,21 @@ const STATUS_LABELS: Record<SceneStatus, string> = {
 
       {
         sceneList.length === 0 ? (
-          <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
+          <div class="rounded-xl border border-slate-400/20 bg-slate-900/60 p-8 text-center text-white">
             <p class="text-blue-100/80">No scenes yet.</p>
-            <p class="mt-2 text-sm text-blue-100/50">Add your first scene note to get started.</p>
+            <p class="mt-2 text-sm text-stone-400/60">Add your first scene note to get started.</p>
           </div>
         ) : (
           <ul class="space-y-3">
             {sceneList.map((scene) => {
               const status = statusBySceneId.get(scene.id);
               const label = status ? STATUS_LABELS[status] : "Not forged yet";
-              const badgeClass = status ? "bg-purple-500/20 text-purple-200" : "bg-white/10 text-blue-100/40 italic";
+              const badgeClass = status ? "bg-amber-500/20 text-amber-300" : "bg-white/10 text-stone-400/50 italic";
               return (
                 <li>
                   <a
                     href={`/scenes/${scene.id}`}
-                    class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
+                    class="flex items-center justify-between rounded-xl border border-slate-400/20 bg-slate-900/60 p-4 text-white transition-colors hover:bg-slate-900/70"
                   >
                     <span class="font-medium">{scene.title}</span>
                     <span

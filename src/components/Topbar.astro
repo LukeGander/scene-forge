@@ -3,18 +3,18 @@ const { user } = Astro.locals;
 ---
 
 <div
-  class="mb-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80"
+  class="mb-4 flex items-center justify-between rounded-lg border border-slate-400/20 bg-slate-900/50 px-4 py-2 text-sm text-white/80"
 >
   {
     user ? (
       <>
-        <span class="text-blue-100/70">{user.email}</span>
+        <span class="text-stone-300/80">{user.email}</span>
         <div class="flex items-center gap-3">
-          <a href="/dashboard" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
+          <a href="/dashboard" class="text-amber-400 transition-colors hover:text-amber-200 hover:underline">
             Projects
           </a>
           <form method="POST" action="/api/auth/signout">
-            <button type="submit" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
+            <button type="submit" class="text-amber-400 transition-colors hover:text-amber-200 hover:underline">
               Sign out
             </button>
           </form>
@@ -22,12 +22,12 @@ const { user } = Astro.locals;
       </>
     ) : (
       <>
-        <span class="text-blue-100/70">Not signed in</span>
+        <span class="text-stone-300/80">Not signed in</span>
         <div class="flex gap-3">
-          <a href="/auth/signin" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
+          <a href="/auth/signin" class="text-amber-400 transition-colors hover:text-amber-200 hover:underline">
             Sign in
           </a>
-          <a href="/auth/signup" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
+          <a href="/auth/signup" class="text-amber-400 transition-colors hover:text-amber-200 hover:underline">
             Sign up
           </a>
         </div>

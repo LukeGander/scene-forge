@@ -58,13 +58,13 @@ export default function NoteEditor({ sceneId, initialNote }: Props) {
         }}
         rows={5}
         placeholder="Describe what happens in this scene..."
-        className="w-full rounded-lg border border-white/10 bg-white/10 p-3 whitespace-pre-wrap text-blue-100/90 placeholder:text-blue-100/30 focus:border-purple-400/50 focus:outline-none"
+        className="w-full rounded-lg border border-white/10 bg-white/10 p-3 whitespace-pre-wrap text-blue-100/90 placeholder:text-blue-100/30 focus:border-amber-500/50 focus:outline-none"
       />
       <ServerError message={error} />
       <Button
         onClick={save}
         disabled={saving}
-        className="rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
+        className="rounded-lg bg-amber-700 px-4 py-2 font-medium text-white transition-colors hover:bg-amber-600"
       >
         {saving ? "Saving..." : "Save note"}
       </Button>
